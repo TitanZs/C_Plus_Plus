@@ -1,0 +1,101 @@
+#include "iostream"
+
+using namespace std;
+
+/*
+Класс  точка с положительными координатами.
+*/
+
+class point
+{
+	int x, y;
+
+public:
+
+	point()
+	{
+		x = 0;
+		y = 0;
+	}
+	point(int x, int y)
+	{
+		this->x = x;
+		this->y = y;
+	}
+	void set_x(int x)
+	{
+		this->x = x;
+	}
+	void set_y(int y)
+	{
+		this->y = y;
+	}
+	void set_x_y(int x, int y)
+	{
+		this->x = x;
+		this->y = y;
+	}
+	void print()
+	{
+		cout << "X - " << x  << endl;
+		cout << "Y - " << y << endl << endl;
+	}
+	int get_x()
+	{
+		return x;
+	}
+	int get_y()
+	{
+		return y;
+	}
+	void move_up(int val)
+	{
+		if (x - val <= 0)
+			x = 0;
+		else
+			x -= val;
+	}
+	void move_down(int val)
+	{
+		x = val;
+	}
+	void move_left(int val)
+	{
+		if (y - val <= 0)
+			y = 0;
+		else
+			y -= val;
+	}
+	void move_right(int val)
+	{
+		 y = val;
+	}
+	~point()
+	{
+
+	}
+
+};
+
+
+void main()
+{
+	point a;
+	a.print();
+	a.set_x(10);
+	a.print();
+	a.set_y(12);
+	a.print();
+	a.set_x_y(56, 65);
+	a.print();
+	cout << a.get_x() << endl;
+	cout << a.get_y() << endl << endl;
+	a.move_up(57);
+	a.print();
+	a.move_down(57);
+	a.print();
+	a.move_left(75);
+	a.print();
+	a.move_right(57);
+	a.print();
+}
