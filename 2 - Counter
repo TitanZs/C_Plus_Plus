@@ -5,7 +5,6 @@
 максимальное значение диапазона, минимальное значение диапазона, шаг прироста. Обязательные методы: конструктор по умолчанию, 
 несколько видов конструкторов с параметрами, увеличение текущего значения счётчика на 1, увеличение значения на заданную
 величину (шаг прироста), сброс (обнуление) счётчика, установка минимального и максимального значений.
-
 #include "iostream"
 
 using namespace std;
@@ -25,23 +24,20 @@ public:
 
 	counter()
 	{
-		count = 0;
-		max = 99999; 
-		min = 0;
-		step = 1; 
+		counter::set_count(0);
+		counter::set_max(9999);
+		counter::set_min(0);
+		counter::set_step(1);
 	}
-	counter(int max, int min) 
+	counter(int count) : counter(count, 0, 9999, 1)	{	}
+	counter(int count, int min) : counter(count, min,9999, 1)	{	}
+	counter(int count, int min, int max) : counter(count, min, max, 1)	{	}
+	counter(int count, int min, int max, int step)
 	{
-		this->max = max;
-		this->min = min;
-	}
-	counter(int max, int min, int count) : counter(max, min)
-	{
-		this->count = count;
-	}
-	counter(int max, int min, int count, int step) : counter(max, min, count)
-	{
-		this->step = step;
+		counter::set_step(step);
+		counter::set_max(max);
+		counter::set_min(min);
+		counter::set_count(count);
 	}
 	void info()
 	{
@@ -62,7 +58,7 @@ public:
 		if (count + 1 > max)
 			count = min;
 		else
-			count ++;
+			count++;
 	}
 	void set_max(int val)
 	{
@@ -80,7 +76,7 @@ public:
 	{
 		step = val;
 	}
-	void set_counter(int val)
+	void set_count(int val)
 	{
 		count = val;
 	}
@@ -115,8 +111,8 @@ void main()
 	a.info();
 	a.counter_plus_step();
 	a.info();
-	a.set_counter(100);
-	a.set_step (5);
+	a.set_count(100);
+	a.set_step(5);
 	a.info();
 	a.counter_plus_step();
 	a.info();
@@ -125,6 +121,17 @@ void main()
 	a.set_max(150);
 	a.set_min(10);
 	cout << "Step - " << a.get_step() << endl << "Count - " << a.get_counter() << endl << "MAx - " << a.get_max() << endl << "Min - " << a.get_min() << endl;
+	
+
+	counter b(10, 20);
+	cout << "b - ";
+	b.info();
+	counter c(10, 20, 15);
+	cout << "c - ";
+	c.info();
+	counter d(10, 20, 15, 2);
+	cout << "d - ";
+	d.info();
 
 
 }
