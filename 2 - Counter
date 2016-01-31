@@ -30,25 +30,17 @@ public:
 		min = 0;
 		step = 1; 
 	}
-	counter(int count)
-	{
-		this->count = count;
-		max = 99999;
-		min = 0;
-		step = 1;
-	}
-	counter(int max, int min, int count)
+	counter(int max, int min) 
 	{
 		this->max = max;
 		this->min = min;
-		this->count = count;
-		this->step = 1;
 	}
-	counter(int max, int min, int count, int step)
+	counter(int max, int min, int count) : counter(max, min)
 	{
-		this->max = max;
-		this->min = min;
 		this->count = count;
+	}
+	counter(int max, int min, int count, int step) : counter(max, min, count)
+	{
 		this->step = step;
 	}
 	void info()
