@@ -1,0 +1,146 @@
+#include "iostream"
+
+using namespace std;
+
+enum color_ { BROWN = 3, GREY, BLACK, WHITE };
+enum harakter_ { EGOIST=1, LASKOVAYA, IGRIVAYA, SPOKOYNAYA };
+enum povedenie_ { AGRESIV=2, PASSIV };
+enum voice_ {GROMKIY=1, TIHIY, HRIPLIY};
+
+
+
+class cat
+{
+	char * nik;
+	color_ color;
+	harakter_ harakter;
+	povedenie_ povedenie;
+	int kol_vo_lap;
+	voice_ voice;
+public:
+	cat(char* nik)
+	{
+		this->nik = nik;
+		color = BROWN;
+		harakter = EGOIST;
+		povedenie = AGRESIV;
+		kol_vo_lap = 4;
+		voice = GROMKIY;
+	}
+	void walk()
+	{}
+	void murlik()
+	{}
+	void slip()
+	{}
+	void eat()
+	{}
+	void jump()
+	{}
+	void drink()
+	{}
+	void play()
+	{}
+
+	void set_color(color_ col)
+	{
+		color = col;
+	}
+	void set_kol_lap(int kol)
+	{
+		if (kol > 4)
+			kol_vo_lap = 4;
+		else
+			kol_vo_lap = kol;
+	}
+
+	char * get_nnik()
+	{
+		return nik;
+	}
+	char * get_color()
+	{
+		switch (color)
+		{
+		case (BROWN) :
+			return "Коричневый";
+		case (GREY) :
+			return "Серый";
+		case (BLACK) :
+			return "Черный";
+		case (WHITE) :
+			return "Белый";
+		default:
+			return  "";
+		}
+	}
+	char * get_voice()
+	{
+		switch (voice)
+		{
+		case (GROMKIY) :
+			return "Громкий";
+		case (TIHIY) :
+			return "Тихий";
+		case (HRIPLIY) :
+			return "Хриплый";
+		default:
+			return  "";
+		}
+	}
+	char * get_harakter()
+	{
+		switch (harakter)
+		{
+		case (EGOIST) :
+			return "Егоист";
+		case (LASKOVAYA) :
+			return "Ласковая";
+		case (IGRIVAYA) :
+			return "Игривая";
+		case (SPOKOYNAYA) :
+			return "Спокойная";
+		default:
+			return  "";
+		}
+	}
+	char* get_povedenie()
+	{
+		switch (povedenie)
+		{
+		case (AGRESIV) :
+			return "Агресивное";
+		case (PASSIV) :
+			return "Пассивное";
+		default:
+			return  "";
+		}
+	}
+	void info_cat()
+	{
+		cout << endl;
+		cout << "Nik - " << get_nnik() << endl;
+		cout << "Color - " << get_color() << endl;
+		cout << "Harakter - " << get_harakter() << endl;
+		cout << "Povedenie - " << get_povedenie() << endl;
+		cout << "Kol-vo lap - " << kol_vo_lap << endl;
+		cout << "Voice - " << get_voice() << endl;
+	}
+	void set_nik(char * nik)
+	{
+		this->nik = nik;
+	}
+
+};
+
+void main()
+{
+	setlocale(0, "");
+	cat tomas("Vasya");
+	tomas.info_cat();
+	tomas.set_nik("Petya");
+	tomas.info_cat();
+	tomas.set_color(BLACK);
+	tomas.set_kol_lap(5);
+	tomas.info_cat();
+}
