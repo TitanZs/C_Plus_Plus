@@ -1,0 +1,130 @@
+#include "iostream"
+
+using namespace std;
+
+/*
+Класс  счетчик;
+Максимальное, минимальное значение, шаг прироста, значение.
+*/
+
+class counter
+{
+	int count;  // состояние
+	int max;	// максимальное значение
+	int min;	// минимальное значение
+	int step;	// шаг прироста
+public:
+
+	counter()
+	{
+		count = 0;
+		max = 99999; 
+		min = 0;
+		step = 1; 
+	}
+	counter(int count)
+	{
+		this->count = count;
+		max = 99999;
+		min = 0;
+		step = 1;
+	}
+	counter(int max, int min, int count)
+	{
+		this->max = max;
+		this->min = min;
+		this->count = count;
+		this->step = 1;
+	}
+	counter(int max, int min, int count, int step)
+	{
+		this->max = max;
+		this->min = min;
+		this->count = count;
+		this->step = step;
+	}
+	void info()
+	{
+		cout << "Max - " << max << endl;
+		cout << "Min - " << min << endl;
+		cout << "Count - " << count << endl;
+		cout << "Step - " << step << endl << endl;
+	}
+	void counter_plus_step()
+	{
+		if (count + step > max)
+			count = min;
+		else
+			count += step;
+	}
+	void counter_plus_one()
+	{
+		if (count + 1 > max)
+			count = min;
+		else
+			count ++;
+	}
+	void set_max(int val)
+	{
+		if (val < count)
+			count = val;
+		max = val;
+	}
+	void set_min(int val)
+	{
+		if (val > count)
+			count = val;
+		min = val;
+	}
+	void set_step(int val)
+	{
+		step = val;
+	}
+	void set_counter(int val)
+	{
+		count = val;
+	}
+	void reset()
+	{
+		count = min;
+	}
+	int get_max()
+	{
+		return max;
+	}
+	int get_min()
+	{
+		return min;
+	}
+	int get_counter()
+	{
+		return count;
+	}
+	int get_step()
+	{
+		return step;
+	}
+	~counter()
+	{
+	}
+};
+
+void main()
+{
+	counter a;
+	a.info();
+	a.counter_plus_step();
+	a.info();
+	a.set_counter(100);
+	a.set_step (5);
+	a.info();
+	a.counter_plus_step();
+	a.info();
+	a.reset();
+	a.info();
+	a.set_max(150);
+	a.set_min(10);
+	cout << "Step - " << a.get_step() << endl << "Count - " << a.get_counter() << endl << "MAx - " << a.get_max() << endl << "Min - " << a.get_min() << endl;
+
+
+}
