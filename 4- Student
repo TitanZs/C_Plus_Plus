@@ -1,0 +1,205 @@
+#include "iostream"
+
+using namespace std;
+
+class student
+{
+	char* first_name;
+	char* family;
+	char* second_name;
+	char* data_roj;
+	char* tel;
+	char* adress;
+	int* zachet;
+	int kol_zah;
+	int* kursovie;
+	int kol_kurs;
+	int* ekzameni;
+	int kol_ekz;
+
+public:
+	student() 
+	{
+		first_name = "Anonim";
+		family = "Anonim";
+		second_name = "Anonim";
+		data_roj = "00.00.00";
+		tel = "(000)-000-00-00";
+		adress = "---";
+		zachet = new int [20];
+		kursovie = new int [20];
+		ekzameni = new int [20];
+		kol_ekz = 0;
+		kol_kurs = 0;
+		kol_zah = 0;
+	}
+	student(char* name) : student(name, "Anonim", "Anonim", "00.00.00", "(000)-000-00-00", "---"){}
+	student(char* name, char* famil) : student(name, famil, "Anonim", "00.00.00", "(000)-000-00-00", "---"){}
+	student(char* name, char* famil, char* sec_nam) : student(name, famil, sec_nam, "00.00.00", "(000)-000-00-00", "---"){}
+	student(char* name, char* famil, char* sec_nam, char* rojd, char* tel, char* adr)
+	{
+		first_name = name;
+		family = famil;
+		second_name = sec_nam;
+		data_roj = rojd;
+		this->tel = tel;
+		adress = adr;
+		zachet = new int[20];
+		kursovie = new int[20];
+		ekzameni = new int[20];
+		kol_ekz = 0;
+		kol_kurs = 0;
+		kol_zah = 0;
+	}
+	void print()
+	{
+		cout << "Name \t\t" << first_name << endl;
+		cout << "Family \t\t" << family << endl;
+		cout << "Second Name \t" << second_name << endl;
+		cout << "Data rojdeniya \t" << data_roj << endl;
+		cout << "Tel. \t\t" << tel << endl;
+		cout << "Adress \t\t" << adress << endl;
+		if (kol_zah == 0)
+			cout << "Zacheti \t" << "Net" << endl;
+		else
+		{
+			cout << "Zacheti \t";
+			for (int i = 0; i < kol_zah; i++)
+			{
+				cout << zachet[i] << ", ";
+			}
+			cout << endl;
+		}
+		if (kol_kurs == 0)
+			cout << "Kursovie \t" << "Net" << endl;
+		else
+		{
+			cout << "kursovie \t";
+			for (int i = 0; i < kol_kurs; i++)
+			{
+				cout << kursovie[i] << ", ";
+			}
+			cout << endl;
+		}if (kol_ekz == 0)
+			cout << "Ekzameni \t" << "Net" << endl;
+		else
+		{
+			cout << "Ekzameni \t";
+			for (int i = 0; i < kol_ekz; i++)
+			{
+				cout << ekzameni[i] << ", ";
+			}
+			cout << endl;
+		}
+		cout << endl;
+	}
+	void add_zachet(int val)
+	{	
+			zachet[kol_zah] = val;
+			kol_zah++;
+			if (kol_zah == 20)
+				cout << "Места под оценки нет!" << endl;
+	}
+	void add_ekzamen(int val)
+	{
+		ekzameni[kol_ekz] = val;
+		kol_ekz++;
+		if (kol_ekz == 20)
+			cout << "Места под оценки нет!" << endl;
+	}
+	void add_kursovoy(int val)
+	{
+		kursovie[kol_kurs] = val;
+		kol_kurs++;
+		if (kol_kurs == 20)
+			cout << "Места под оценки нет!" << endl;
+	}
+	void set_first_name(char * name)
+	{
+		first_name = name;
+	}
+	void set_family(char * fam)
+	{
+		family = fam;
+	}
+	void set_second_name(char * sec_nam)
+	{
+		second_name = sec_nam;
+	}
+	void set_tel(char * tel)
+	{
+		this->tel = tel;
+	}
+	void set_ardess(char * ard)
+	{
+		adress = ard;
+	}
+	void set_date(char * dat)
+	{
+		data_roj = dat;
+	}
+
+
+
+	char* get_first_name()
+	{
+		return first_name;
+	}
+	char* get_family()
+	{
+		return family;
+	}
+	char* get_second_name()
+	{
+		return second_name ;
+	}
+	char* get_tel()
+	{
+		return tel;
+	}
+	char* get_ardess()
+	{
+		return adress;
+	}
+	char* get_date()
+	{
+		return data_roj;
+	}
+	~student()
+	{
+		delete[]zachet;
+		delete[]kursovie;
+		delete[]ekzameni;
+	}
+};
+
+void main()
+{
+	setlocale(0, "");
+	student a;
+	a.print();
+	student b("Vasya", "Ivanov", "Ivanovich");
+	b.print();
+	student c("Vasya", "Ivanov", "Ivanovich", "01.01.1950", "098-586-68-98", "Deribasovskaya");
+	c.print();
+	c.add_zachet(5);
+	c.add_zachet(4);
+	c.add_zachet(5);
+	c.add_ekzamen(5);
+	c.add_kursovoy(7);
+	c.print();
+	c.set_family("Petrovkin");
+	c.set_first_name("Chijik");
+	c.print();
+	c.set_date("01.15.2006");
+	c.set_ardess("Dunaevskogo 156");
+	c.print();
+
+	cout << c.get_ardess() << endl;
+	cout << c.get_date() << endl;
+	cout << c.get_family() << endl;
+	cout << c.get_first_name()  << endl;
+	cout << c.get_second_name() << endl;
+
+
+}
