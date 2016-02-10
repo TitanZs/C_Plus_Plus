@@ -3,14 +3,136 @@
 
 using namespace std;
 
+char* month(int m)
+{
+	char* dat;
+	switch (m)
+	{
+	case 1:
+		dat = "Январь";
+		break;
+	case 2:
+		dat = "Февраль";
+		break;
+	case 3:
+		dat = "Март";
+		break;
+	case 4:
+		dat = "Апрель";
+		break;
+	case 5:
+		dat = "Май";
+		break;
+	case 6:
+		dat = "Июнь";
+		break;
+	case 7:
+		dat = "Июль";
+		break;
+	case 8:
+		dat = "Август";
+		break;
+	case 9:
+		dat = "Сентабрь";
+		break;
+	case 10:
+		dat = "Октябрь";
+		break;
+	case 11:
+		dat = "Ноябрь";
+		break;
+	case 12:
+		dat = "Декабрь";
+		break;
+	default:
+		dat = "Не известно";
+	}
+	return dat;
+}
+
+struct data_time
+{
+	int year;
+	char* month;
+	int day;
+	int hour: 5;
+	int minutes: 6;
+	int second :6 ;
+};
+class adress_c
+{
+	char* gorod;
+	char* street;
+	int hause;
+	int kv;
+public:
+	adress_c()
+	{
+		gorod = "No name";
+		street = "No name";
+		hause = 0;
+		kv = 0;
+	}
+	// делегирование  присутствует
+	adress_c(char* gor) : adress_c(gorod, "No name", 0, 0){}
+	adress_c(char* gor, char* str) : adress_c(gorod, street, 0, 0){}
+	adress_c(char* gor, char* str, int hause) : adress_c(gor, str, hause, 0){}
+	adress_c(char* gor, char* str, int hause, int kv)
+	{
+		gorod = gor;
+		street = str;
+		hause = hause;
+		kv = kv;
+	}
+	~adress_c()	{	}
+	void set_gorod(char* gorod)
+	{
+		this->gorod = gorod;
+	}
+	void set_street(char* street)
+	{
+		this->street = street;
+	}
+	void set_hause(int hause)
+	{
+		this->hause = hause;
+	}
+	void set_kv(int kv)
+	{
+		this->kv = kv;
+	}
+	char* get_gorod()
+	{
+		return gorod;
+	}
+	char* get_street()
+	{
+		return street;
+	}
+	int get_hause()
+	{
+		return hause;
+	}
+	int get_kv()
+	{
+		return kv;
+	}
+	void print()
+	{
+		cout << "Город  - " << gorod << endl;
+		cout << "Улица  - " << street << endl;
+		cout << "Дом  - " << hause << endl;
+		cout << "Кв  - " << kv << endl;
+	}
+};
 class student
 {
 	char* first_name;
 	char* family;
 	char* second_name;
-	char* data_roj;
+	data_time* data_roj;
 	char* tel;
-	char* adress;
+	adress_c adress;
 	int* zachet;
 	int kol_zah;
 	int* kursovie;
@@ -31,58 +153,73 @@ public:
 		second_name = new char[strlen("Аноним") + 1];
 		strcpy_s(second_name, strlen("Аноним") + 1, "Аноним");
 
-		data_roj = new char[strlen("00.00.00") + 1];
-		strcpy_s(data_roj, strlen("00.00.00") + 1, "00.00.00");
-
+		data_roj = new data_time;
+		data_roj->year = rand() % (2000 - 1980) + 1980;
+		data_roj->month = month( rand() % 12);
+		data_roj->day = rand() % 30;
+		data_roj->hour = 0;
+		data_roj->minutes = 0;
+		data_roj->second = 0;
+			
 		tel = new char[strlen("(000)-000-00-00") + 1];
 		strcpy_s(tel, strlen("(000)-000-00-00") + 1, "(000)-000-00-00");
 
-		adress = new char[strlen("---") + 1];
-		strcpy_s(adress, strlen("---") + 1, "---");
+	    adress.set_gorod("Одесса");
+		adress.set_hause(45);
+		adress.set_kv(5);
+		adress.set_street("Затонского");
 	
 		status = new char[strlen("Учится") + 1];
 		strcpy_s(status, strlen("Учится") + 1, "Учится");
 
-		zachet = new int[10];
-		for (int i = 0; i < 5; i++)
+		int val_1 = rand() % 7;
+		zachet = new int[val_1];
+		for (int i = 0; i < val_1; i++)
 			zachet[i] = rand() % 5;
-		kursovie = new int[10];
-		for (int i = 0; i < 4; i++)
+		kol_zah = val_1;
+
+		val_1 = rand() % 5;
+		kursovie = new int[val_1];
+		for (int i = 0; i < val_1; i++)
 			kursovie[i] = rand() % 5;
-		ekzameni = new int[10];
-		for (int i = 0; i < 5; i++)
+		kol_kurs = val_1;
+
+		val_1 = rand() % 7;
+		ekzameni = new int[val_1];
+		for (int i = 0; i < val_1; i++)
 			ekzameni[i] = rand() % 5;
-		kol_ekz = 5;
-		kol_kurs = 4;
-		kol_zah = 5;
+		kol_ekz = val_1;		
 	}
-	student(char* name) : student(name, "Аноним", "Аноним", "00.00.00", "(000)-000-00-00", "---"){}
-	student(char* name, char* famil) : student(name, famil, "Аноним", "00.00.00", "(000)-000-00-00", "---"){}
-	student(char* name, char* famil, char* sec_nam) : student(name, famil, sec_nam, "00.00.00", "(000)-000-00-00", "---"){}
-	student(char* name, char* famil, char* sec_nam, char* rojd, char* tel, char* adr)
+
+	// делегирование  присутствует
+	student(char* name) : student(name, "Аноним", "Аноним", rand() % 2000, rand() % 12, rand() % 30, "(000)-000-00-00", "---"){}
+	student(char* name, char* famil) : student(name, famil, "Аноним", rand() % ( 2000 - 1980) + 1980, rand() % 12, 0, "(000)-000-00-00", "---"){}
+	student(char* name, char* famil, char* sec_nam) : student(name, famil, sec_nam, rand() % 2000, rand() % 12, rand() % 30, "(000)-000-00-00", "---"){}
+	student(char* name, char* famil, char* sec_nam, int Y,int M, int D, char* tel, char* adr)
 	{
 		first_name = name;
 		family = famil;
 		second_name = sec_nam;
-		data_roj = rojd;
+		data_roj->year = Y;
+		data_roj->month = month(M);
+		data_roj->day = D;
 		this->tel = tel;
-		adress = adr;
-		zachet = new int[10];
+		adress.set_gorod(adr);
+		zachet = new int[5];
 		for (int i = 0; i < 5; i++)
 			zachet[i] = rand() % 5;
-		kursovie = new int[10];
-		for (int i = 0; i < 3; i++)
+		kursovie = new int[5];
+		for (int i = 0; i < 5; i++)
 			kursovie[i] = rand() % 5;
-		ekzameni = new int[10];
-		for (int i = 0; i < 6; i++)
+		ekzameni = new int[5];
+		for (int i = 0; i < 5; i++)
 			ekzameni[i] = rand() % 5;
-		kol_ekz = 6;
-		kol_kurs = 3;
+		kol_ekz = 5;
+		kol_kurs = 5;
 		kol_zah = 5;
 		status = new char[strlen("Учится") + 1];
 		strcpy_s(status, strlen("Учится") + 1, "Учится");
 	}
-
 	student(const student & stud)
 	{
 		first_name = stud.first_name;
@@ -94,35 +231,39 @@ public:
 
 		if (stud.zachet)
 		{
-			zachet = new int[10];
-			for (int i = 0; i < 4; i++)
+			zachet = new int[stud.kol_zah];
+			for (int i = 0; i < stud.kol_zah; i++)
 				zachet[i] = stud.zachet[i];
 			kol_zah = 4;
 		}
 		if (stud.kursovie)
 		{
-			kursovie = new int[10];
-			for (int i = 0; i < 6; i++)
+			kursovie = new int[stud.kol_kurs];
+			for (int i = 0; i < stud.kol_kurs; i++)
 				kursovie[i] = stud.kursovie[i];
 			kol_kurs = 6;
 		}
 		if (stud.ekzameni)
 		{
-			ekzameni = new int[10];
-			for (int i = 0; i < 7; i++)
+			ekzameni = new int[stud.kol_ekz ];
+			for (int i = 0; i < stud.kol_ekz; i++)
 				ekzameni[i] = stud.ekzameni[i]; 
 			kol_ekz = 6;
 		}
 	}
 	void print()
 	{
+		cout << endl;
 		cout << "Фамилия \t" << family << endl;
 		cout << "Имя \t\t" << first_name << endl;
-		
 		cout << "Отчетво \t" << second_name << endl;
-		cout << "Рождение \t" << data_roj << endl;
+		cout << "Дата рождения:" << endl;
+		cout << "\t:" << data_roj->year << endl;
+		cout << "\t:" << data_roj->month << endl;
+		cout << "\t:" << data_roj->day << endl;
 		cout << "Тел. \t\t" << tel << endl;
-		cout << "Адресс \t\t" << adress << endl;
+		cout << "Адресс " << endl;
+		adress.print();
 		cout << "Статус \t\t" << status << endl;
 
 		if (kol_zah == 0)
@@ -131,9 +272,7 @@ public:
 		{
 			cout << "Зачеты \t\t";
 			for (int i = 0; i < kol_zah; i++)
-			{
 				cout << zachet[i] << ", ";
-			}
 			cout << endl;
 		}
 		if (kol_kurs == 0)
@@ -142,9 +281,7 @@ public:
 		{
 			cout << "Курсовые \t";
 			for (int i = 0; i < kol_kurs; i++)
-			{
 				cout << kursovie[i] << ", ";
-			}
 			cout << endl;
 		}if (kol_ekz == 0)
 			cout << "Экзамены \t" << "Net" << endl;
@@ -152,34 +289,56 @@ public:
 		{
 			cout << "Экзамены \t";
 			for (int i = 0; i < kol_ekz; i++)
-			{
 				cout << ekzameni[i] << ", ";
-			}
 			cout << endl;
 		}
 		
 		cout << endl;
 	}
-	void add_zachet(int val)
+	void add_zachet(int* val, int kol)
 	{	
-		zachet[kol_zah] = val;
-		kol_zah++;
-		if (kol_zah == 10)
-			cout << "Места под оценки нет!" << endl;
+		int* temp = new int[kol_zah + kol];
+		int i = 0;
+		for (; i < kol_zah; i++)
+			temp[i] = zachet[i];
+		
+		cout << endl;
+		for (int g = 0; i < kol_zah + kol; i++, g++)
+			temp[i] = val[g];
+
+		kol_zah += kol;
+		
+		zachet = temp;
+		temp = nullptr;
+		delete[] temp;
 	}
-	void add_ekzamen(int val)
+	void add_ekzamen(int* val, int kol)
 	{
-		ekzameni[kol_ekz] = val;
-		kol_ekz++;
-		if (kol_ekz == 10)
-			cout << "Места под оценки нет!" << endl;
+		int* temp = new int[kol_ekz + 1];
+		int i = 0;
+		for (; i < kol_zah; i++)
+			temp[i] = ekzameni[i];
+		for (int g = 0; i < kol_zah+kol; i++, g++)
+			temp[i] = val[g];
+		kol_ekz += kol;
+
+		zachet = temp;
+		temp = nullptr;
+		delete[] temp;		
 	}
-	void add_kursovoy(int val)
+	void add_kursovoy(int* val, int kol)
 	{
-		kursovie[kol_kurs] = val;
-		kol_kurs++;
-		if (kol_kurs == 10)
-			cout << "Места под оценки нет!" << endl;
+		int* temp = new int[kol_kurs + 1];
+		int i = 0;
+		for (; i < kol_kurs; i++)
+			temp[i] = kursovie[i];
+		for (int g = 0; i < kol_kurs + kol; i++, g++)
+			temp[i] = val[g];
+		kol_kurs += kol;
+
+		zachet = temp;
+		temp = nullptr;
+		delete[] temp;
 	}
 	int get_zachet()
 	{
@@ -220,11 +379,16 @@ public:
 	}
 	void set_ardess(char * ard)
 	{
-		adress = ard;
+		adress.set_gorod(ard);
 	}
-	void set_date(char * dat)
+	void set_date(int g, int m, int d, int h, int min, int s)
 	{
-		data_roj = dat;
+		data_roj->year = g ;
+		data_roj->month  = month(m);
+		data_roj->day = d;
+		data_roj->hour = h;
+		data_roj->minutes = min;
+		data_roj->second = s;
 	}
 	void set_stat(char * stat)
 	{
@@ -248,26 +412,39 @@ public:
 	}
 	char* get_ardess()
 	{
-		return adress;
+		adress.print();
 	}
-	char* get_date()
+	data_time* get_date()
 	{
-		return data_roj;
+		cout << "Дата рождения:" << endl;
+		cout << "\t:" << data_roj->year  << endl;
+		cout << "\t:" << data_roj->month << endl;
+		cout << "\t:" << data_roj->day << endl;
 	}
 	~student()
 	{
 		//cout << "Des-tor stud" << endl;
 		delete[]zachet;
+		delete[]tel;
 		delete[]kursovie;
 		delete[]ekzameni;
+		delete[]data_roj;
+		delete[]status;
+
+
+		delete[] first_name;
+		delete[] family;
+		delete[] second_name;
+		
+
+	
 	}
 };
 
 char* fam[9] = { "Иванов", "Петров", "Сидоров", "Шевченко", "Иващенко", "Смирнов", "Каретников", "Сананов", "Селизнев" };
 char* imena[9] = { "Петя", "Вася", "Коля", "Игорь", "Сережа", "Вадим", "Сергей", "Дима", "Федя" };
-char* rojd[9] = { "01.20.1986", "02.03.1985", "25.05.1987", "21.06.1986", "21.07.1963", "31.01.1987", "01.01.1181", "01.04.1985", "01.02.1983" };
-char* adr[9] = { "Киев", "Одесса", "Стамбул", "Камчатка", "Поселок", "Таирово", "Екатериненская", "Паустовского", "Бочарова" };
-char* tel[9] = { "098-565-65-56", "059-857-56-98", "111-222-33-44", "99-88-777-333", "578-895-55-66", "000-000-00-00", "11-11-111-111", "222-222-22-22", "333-333-33-33" };
+char* adr[9] = { "Киев", "Одесса", "Хмельницк", "Поатава", "Харьков", "Севастополь", "Херсон", "Алушта", "Южный" };
+char* tel[9] = { "098-565-65-56", "059-857-56-98", "111-222-33-44", "99-88-777-333", "578-895-55-66", "321-353-94-23", "11-11-111-111", "222-222-22-22", "333-333-33-33" };
 char* spec[4] = { "Программисты", "Дизайнеры", "Архитекторы", "Ученые" };
 
 class group
@@ -298,7 +475,7 @@ public:
 			arr[i] = new student;
 			arr[i]->set_family(fam[rand() % 9]);
 			arr[i]->set_first_name(imena[rand() % 9]);
-			arr[i]->set_date(rojd[rand() % 9]);
+			arr[i]->set_date(rand() % (2000 - 1980) + 1980, rand() % 12, rand() % 30, 0, 0, 0);
 			arr[i]->set_ardess(adr[rand() % 9]);
 			arr[i]->set_tel (tel[rand() % 9]);
 		}
@@ -311,6 +488,7 @@ public:
 	}
 	group(const group & grup)
 	{
+		// не совсем понял как тут можно применить делигирование
 		this->kol_vo_stud = grup.kol_vo_stud;
 		this->arr = nullptr;
 		if (grup.kol_vo_stud > 0)
@@ -391,15 +569,11 @@ public:
 	}
 	void otchislit()
 	{
-		
 		// удаляет всех студентов у которых общая  оценка по зачетам меньше 10
 		for (int i = 0; i < kol_vo_stud; i++)
 		{
 			if (arr[i]->get_zachet() < 10)
-			{
-				arr[i]->set_stat("Отчислен");
-			}
-			
+				arr[i]->set_stat("Отчислен");			
 		}
 	}
 	void sort()
@@ -408,7 +582,6 @@ public:
 		{
 			for (int j = 0; j<kol_vo_stud - 1 - i; ++j)
 			{
-				//cout << strcmp(arr[i + 1]->get_family(), arr[i]->get_family()) << endl;
 				if (strcmp(arr[j + 1]->get_family(), arr[j]->get_family()) < 0)
 					swap(arr[j + 1], arr[j]);
 			}
@@ -425,48 +598,63 @@ public:
 		{
 			for (int i = 0; i < kol_vo_stud; i++)
 			{
-				//cout << "\t\t\t Студент " << i+1 << endl;
+				cout << "----------- Студент № " << i+1 ;
 				arr[i]->print();
 			}
 		}
 	}
 	~group()
 	{
-		if (arr) 
-			delete[]  arr;
+		if (arr)
+		{
+			for (int i = 0; i < kol_vo_stud; i++)
+				delete[]  arr[i];
+		}
+		delete[]arr;
+		delete[]specializaciya;
+		delete[]name_group;
 	}
 };
 void main()
 {
 	srand(time(NULL));
 	setlocale(0, "");
-	/*
+	
 	
 	student a;
-	a.print();
-	student b("Vasya", "Ivanov", "Ivanovich");
-	b.print();
-	student c("Vasya", "Ivanov", "Ivanovich", "01.01.1950", "098-586-68-98", "Deribasovskaya");
-	c.print();
-	c.add_zachet(5);
-	c.add_zachet(4);
-	c.add_zachet(5);
-	c.add_ekzamen(5);
-	c.add_kursovoy(7);
-	c.print();
-	c.set_family("Petrovkin");
-	c.set_first_name("Chijik");
-	c.print();
-	c.set_date("01.15.2006");
-	c.set_ardess("Dunaevskogo 156");
-	c.print();
+	//a.print();
+	//student b("Vasya", "Ivanov", "Ivanovich");
+	//b.print();
+	//student c("Vasya", "Ivanov", "Ivanovich", "01.01.1950", "098-586-68-98", "Deribasovskaya");
+	//c.print();
 
-	cout << c.get_ardess() << endl;
-	cout << c.get_date() << endl;
-	cout << c.get_family() << endl;
-	cout << c.get_first_name()  << endl;
-	cout << c.get_second_name() << endl;
-	*/
+	
+	// оценки принимаем через массив
+	int kol = 5;
+	int* ocenki = new int[kol];
+	for (int i = 0; i < kol; i++)
+		ocenki[i] = rand() % 12;
+	
+	cout <<  endl;
+	a.add_zachet(ocenki, kol);
+	delete[]ocenki;
+
+	a.print();
+	//c.add_ekzamen(5);
+	//c.add_kursovoy(7);
+	//c.print();
+	//c.set_family("Petrovkin");
+	//c.set_first_name("Chijik");
+	//c.print();
+	//c.set_ardess("Dunaevskogo 156");
+	//c.print();
+
+	//cout << c.get_ardess() << endl;
+	//cout << c.get_date() << endl;
+	//cout << c.get_family() << endl;
+	//cout << c.get_first_name()  << endl;
+	//cout << c.get_second_name() << endl;
+	
 
 	/*
 	group ag(2);
@@ -483,10 +671,16 @@ void main()
 	ag.print();
 	*/
 
-	group a1(7);
+	//group a1(7);
 	//a1.print();
 	//a1[1].set_stat("Отчислен");
-	a1.otchislit();
-	a1.print();
+	//a1.otchislit();
+	//a1.print();
 
+
+	adress_c a_a("Одесса", "Бочарова", 13, 21);
+	a_a.print();
+	
+	
+	
 }
