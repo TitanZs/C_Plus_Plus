@@ -284,9 +284,15 @@ public:
 		}
 		return -1;
 	}
+	// 6 пункт оптимизировал интекс оф
 	int IndexOf(string_c str)
 	{
-		return  strpbrk(string_, str.string_) ? false : true;
+		for (int i = 0; i < strlen(string_); i++)
+		{
+			if (string_[i] == str.string_[i])
+				return i;
+		}
+		return -1;
 	}
 	int LastIndexOf(string_c str)
 	{
@@ -382,21 +388,8 @@ public:
 		string_ = temp;
 		temp = nullptr;
 	}
-	void Remove(int val)
-	{
-		if (val <= strlen(string_))
-		{
-			int size = strlen(string_)  - val;
-			char* temp = new char[size+1];
-			for (int i = 0; i < size; i++)
-			{
-				temp[i] = string_[i];
-			}
-			delete[] string_;
-			string_ = temp;
-			temp = nullptr;
-		}
-	}
+	// 7 пункт убрал  один ремув
+	void Remove(int val){ string_c::Remove(val, strlen(string_)); }
 	void Remove(int ind, int val)
 	{
 		if (ind <= strlen(string_))
@@ -605,39 +598,33 @@ public:
 		length = strlen(string_);
 		capacity = sizeof(string_);
 	}
+	// 8 Пнукт переделал сортировку, по другому не придумал! 
+	void rev()
+	{
+		int i = 0;
+		int k = strlen(string_) - 1;
+		while (i < k)
+		{
+			swap(string_[i], string_[k]);
+			i++;
+			k--;
+		}
+	}
 	void SortAZ()
 	{
-		int temp = 0; 
-		bool exit = false; 
-		while (!exit)
+		for (int i = 0; i<strlen(string_); i++)
 		{
-			exit = true;
-			for (int i = 0; i < (strlen(string_) - 1); i++) 
-			if (string_[i] > string_[i + 1])
+			for (int k = 0; k<strlen(string_) - 1 - i; k++)
 			{
-				temp = string_[i];
-				string_[i] = string_[i + 1];
-				string_[i + 1] = temp;
-				exit = false;
+				if (string_[k + 1]<string_[k])
+					swap(string_[k + 1], string_[k]);
 			}
 		}
 	}
 	void SortZA()
 	{
-		int temp = 0;
-		bool exit = false;
-		while (!exit)
-		{
-			exit = true;
-			for (int i = strlen(string_) - 1; i > 0; i--)
-			if (string_[i] > string_[i - 1])
-			{
-				temp = string_[i];
-				string_[i] = string_[i - 1];
-				string_[i - 1] = temp;
-				exit = false;
-			}
-		}
+		this->rev;
+		this->SortAZ;
 	}
 	void Shuffle()
 	{
@@ -711,42 +698,11 @@ public:
 			capacity = sizeof(string_);
 		}
 	}
-
-	
 };
-
+// 9 пункт оптимизировал Compare
 static int Compare(string_c fir, string_c sec)
 {
-	int val = 0;
-	for (int i = 0; i < strlen(fir.get_string()); i++)
-	{
-		if (fir[i] == sec[i])
-		{
-			val = 0;
-			continue;
-		}
-		else
-		{
-			return 1;
-		}
-	}
-	if (val == 0)
-	{
-		if (fir.getlength() == sec.getlength())
-			val = 0;
-		else
-			val = 1;
-
-		if (fir.getcapacity()  == sec.getcapacity() )
-			val = 0;
-		else
-			val = 1;
-
-		if (val = 0)
-			return 0;
-		else
-			return 1;
-	}
+	Compare(fir, sec);
 }
 static int Compare(string_c fir, char* sec)
 {
