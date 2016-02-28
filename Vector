@@ -1,0 +1,283 @@
+#include <iostream>
+#include "time.h"
+#include <conio.h>
+using namespace std;
+
+class vector
+{
+	int * arr;
+	int capacity;
+	int size;
+public:
+	vector()
+	{
+		size = 0;
+		capacity = 10;
+		arr = new int[capacity];
+	}
+	vector(int capacity) : vector()
+	{
+		this->capacity = capacity;
+	}
+	vector(const vector & v)
+	{
+		arr = nullptr;
+		capacity = v.capacity;
+		size = v.size;
+		if (v.arr)
+		{
+			arr = new int[capacity];
+			for (int i = 0; i<size; i++)
+				arr[i] = v.arr[i];
+		}
+	}
+	~vector()
+	{
+		if (arr)
+			delete[] arr;
+	}
+	vector & operator+=(const vector & vec)
+	{
+		*this = *this + vec;
+		return *this;
+	}
+	vector & operator=(const vector & vec)
+	{
+		if (this == &vec)
+			return *this;
+		if (arr)
+			delete[] arr;
+		arr = nullptr;
+		capacity = vec.capacity;
+		size = vec.size;
+		if (vec.arr)
+		{
+			arr = new int[capacity];
+			for (int i = 0; i<size; i++)
+				arr[i] = vec.arr[i];
+		}
+		return *this;
+	}
+	vector operator+(const int & vec)
+	{
+		vector temp;
+		temp.capacity = capacity + 1;
+		temp.size = size + 1;
+		temp.arr = new int[temp.capacity];
+		for (int i = 0; i<size; i++)
+			temp.arr[i] = arr[i];
+		temp.arr[size] = vec;
+		return temp;
+	}
+	vector operator+(const vector & vec)
+	{
+		vector temp;
+		temp.capacity = capacity + vec.capacity;
+		temp.size = size + vec.size;
+		if (!temp.capacity)
+			return temp;
+		temp.arr = new int[temp.capacity];
+		for (int i = 0; i<size; i++)
+			temp.arr[i] = arr[i];
+		for (int i = 0; i<vec.size; i++)
+			temp.arr[i + size] = vec.arr[i];
+		return temp;
+	}
+	bool operator==(const vector & vec)
+	{
+		if (size != vec.size)
+			return false;
+		for (int i = 0; i < size; i++)
+		{
+			for (int j = 0; j < size; j++)
+			{
+				if (arr[i] == vec.arr[j])
+					continue;
+				else
+					return false;
+			}
+		}
+		return true;
+	}
+	void random_fill(int min, int max)
+	{
+		for (int i = 0; i < capacity; i++)
+		{
+			arr[i] = rand() % max + min;
+			size++;
+		}
+	}
+	void insert_el(int val, int pos)
+	{
+		if (pos<0 || pos>size)
+			return;
+		int* temp = new int[capacity + 1];
+		for (int i = 0; i<pos; i++)
+			temp[i] = arr[i];
+		temp[pos] = val;
+		for (int i = pos; i<size; i++)
+			temp[i + 1] = arr[i];
+		if (arr)
+			delete[] arr;
+		arr = temp;
+		size++;
+	}
+	void delete_el(int pos)
+	{
+		if (pos<0 || pos >= size)
+			return;
+		if (size == 1)
+		{
+			delete[]arr;
+			arr = nullptr;
+			size = 0;
+			return;
+		}
+		int* temp = new int[size - 1];
+		for (int i = 0; i<pos; i++)
+			temp[i] = arr[i];
+		for (int i = pos + 1; i<size; i++)
+			temp[i - 1] = arr[i];
+		if (arr)
+			delete[] arr;
+		arr = temp;
+		size--;
+
+	}
+	void resize(int cap)
+	{
+		if (cap < size)
+		{
+			size = cap;
+			this->capacity = size;
+			return;
+		}
+		this->capacity = cap;
+	}
+	void show()
+	{
+		for (int i = 0; i < size; i++)
+		{
+			cout << arr[i] << " ";
+		}
+		cout << endl;
+	}
+	void add_End(int val)
+	{
+		if (capacity < size + 1)
+			capacity *= 2;
+		int* temp = new int[capacity];
+		for (int i = 0; i<size; ++i)
+			temp[i] = arr[i];
+		temp[size] = val;
+		if (arr)
+			delete[] arr;
+		arr = temp;
+		size++;
+	}
+	void remove_end()
+	{
+		if (capacity == 1)
+		{
+			delete[]arr;
+			arr = nullptr;
+			size = 0;
+			return;
+		}
+		int* temp = new int[capacity];
+		for (int i = 0; i<size - 1; i++)
+			temp[i] = arr[i];
+		if (arr)
+			delete[] arr;
+		arr = temp;
+		size--;
+	}
+	void clear()
+	{
+		for (int i = 0; i < capacity; i++)
+		{
+			arr[i] = 0;
+		}
+	}
+	void reverse()
+	{
+		int i = 0;
+		int j = size - 1;
+		while (i < j)
+		{
+			swap(arr[i], arr[j]);
+			i++;
+			j--;
+		}
+	}
+	void q_qort(int left, int right)
+	{
+		int i = left;
+		int j = right;
+		int temp, mid;
+		mid = arr[i + (j - i) / 2];
+		while (i <= j)
+		{
+			while (arr[i] < mid) i++;
+			while (arr[j] > mid) j--;
+
+			if (i <= j) {
+				swap(arr[i], arr[j]);
+				i++; j--;
+			}
+		}
+		if (i<right)
+			this->q_qort(i, right);
+
+		if (left<j)
+			this->q_qort(left, j);
+	}
+	void shuffle()
+	{
+		for (int i = 0; i < size; i++)
+			swap(arr[i], arr[rand() % size]);
+	}
+	void operator () (int capacity) { resize(capacity); }
+	void sort()
+	{
+		for (int i = 0; i<size; i++)
+		{
+			for (int k = 0; k<size - 1 - i; k++)
+			{
+				if (arr[k + 1]<arr[k])
+					swap(arr[k + 1], arr[k]);
+			}
+		}
+	}
+	int index_of(int val)
+	{
+		for (int i = 0; i < size; i++)
+		{
+			if (arr[i] == val)
+				return i;
+			else
+				return -1;
+		}
+	}
+	int last_index_of(int val)
+	{
+		for (int i = size - 1; i >= 0; i++)
+		{
+			if (arr[i] == val)
+				return i;
+		}
+	}
+	int get_size() const { return size; }
+	int get_capacity() const { return capacity; }
+	int vector::operator [] (int index)
+	{
+		if (index >= size || index < 0)
+			return -1;
+
+		return arr[index];
+	}
+};
+
+
+
+
