@@ -1,9 +1,15 @@
 #include <iostream>
 #include "string.h"
+#include <string>
 #include "iomanip"
 #include <conio.h>
 #include <ctime>
 #include "time.h"
+#include <vector>
+#include <algorithm>
+#include <functional>
+#include <iostream>
+
 using namespace std;
 
 class string_c
@@ -55,23 +61,7 @@ public:
 	}
 	int getlength()	{		return capacity ;	}
 	int getcapacity()	{		return length;	}
-	// 3 пункт проверка по содержимому
-	bool compare_to(string_c str)
-	{ 	
-		int val = 0;
-		for (int i = 0; i < strlen(str.get_string()); i++)
-		{
-			if (str[i] == string_[i])
-			{
-				continue;
-			}
-			else
-			{
-				return 1;
-			}
-		}
-		return 0;
-	}
+	bool compare_to(string_c str)	{ compare_to(str); }
 	bool compare_to(char* str)	
 	{
 		int val = 0;
@@ -142,19 +132,14 @@ public:
 		capacity += str.capacity;
 		length += str.length;
 	}
-	void concat(char* str)
-	{
-		strcat_s(string_, strlen(string_) + strlen(str) + 1, str);
-		capacity += sizeof(str);
-		length += strlen(str);
-	}
-	void contact(char* str[], int size)
+	void concat(char* str)	{ concat(str, strlen(string_)); }
+	void concat(char* str, int size)
 	{
 		for (int i = 0; i < size; i++)
 		{
-			strcat_s(string_, strlen(string_) + strlen(str[i]) + 1, str[i]);
-			capacity += sizeof(str[i]);
-			length += strlen(str[i]);
+			strcat_s(string_, strlen(string_) + strlen(str) + 1, str);
+			capacity += sizeof(str);
+			length += strlen(str);
 		}
 	}
 	string_c& operator=(const string_c& str)
@@ -169,27 +154,45 @@ public:
 	}
 	friend bool operator==(const string_c& lstr, const string_c& rstr)
 	{
-		return strcmp(lstr.string_,rstr.string_);
+		if (strcmp(lstr.string_, rstr.string_) == 0 )
+			return 0;
+		else
+			return -1;
 	}
 	friend bool operator>(const string_c& lstr, const string_c& rstr)
 	{
-		return (strlen(lstr.string_) > strlen(rstr.string_)) ? true : false;
+		if (strcmp(lstr.string_, rstr.string_) > 0)
+			return 0;
+		else
+			return -1;
 	}
 	friend bool operator<(const string_c& lstr, const string_c& rstr)
 	{
-		return (strlen(lstr.string_) < strlen(rstr.string_)) ? true : false;
+		if (strcmp(lstr.string_, rstr.string_) == -1)
+			return 0;
+		else
+			return -1;
 	}
 	friend bool operator>=(const string_c& lstr, const string_c& rstr)
 	{
-		return (strlen(lstr.string_) >= strlen(rstr.string_)) ? true : false;
+		if (strcmp(lstr.string_, rstr.string_) > 0 && strcmp(lstr.string_, rstr.string_) == 0)
+			return 0;
+		else
+			return -1;
 	}
 	friend bool operator<=(const string_c& lstr, const string_c& rstr)
 	{
-		return (strlen(lstr.string_) <= strlen(rstr.string_)) ? true : false;
+		if (strcmp(lstr.string_, rstr.string_) < 0 && strcmp(lstr.string_, rstr.string_) == 0)
+			return 0;
+		else
+			return -1;
 	}
 	friend bool operator!=(const string_c& lstr, const string_c& rstr)
 	{
-		return (strlen(lstr.string_) != strlen(rstr.string_)) ? true : false;
+		if (strcmp(lstr.string_, rstr.string_) < 0 && strcmp(lstr.string_, rstr.string_) > 0)
+			return 0;
+		else
+			return -1;
 	}
 	string_c& operator()(const char* str)
 	{
@@ -201,38 +204,38 @@ public:
 		char pull = '-';
 		return (i >= 0 && i < strlen(this->string_)) ? this->string_[i] : pull;
 	}
-	friend string_c operator+(const string_c& lstr, const string_c& rstr)
+	friend string_c operator+(const string_c& lstr, const string_c& rstr)	
 	{
-		int size = strlen(lstr.string_) + strlen(rstr.string_);
+		int size = strlen(lstr.string_) + strlen(rstr);
 		char* temp = new char[size + 1];
+
 		for (int i = 0; i < strlen(lstr.string_); i++)
 			temp[i] = lstr.string_[i];
 		for (int ii = strlen(lstr.string_), j = 0; ii <= size; ii++, j++)
-			temp[ii] = rstr.string_[j];
-		//strcat_s(temp1, strlen(temp1) + strlen(rstr.string_) + 1, rstr.string_);
+			temp[ii] = rstr[j];
+
 		string_c temp1(temp);
 		return temp1;
 	}
-	// 4 пункт делигирование оператора =+
 	string_c& operator+=(const string_c& str) 	{		string_c::operator+=(str);	}
 	string_c& operator+=(const char str)	{ string_c::operator+=(str); }
 	string_c& operator+=(const char* str)
 	{
 		int size = strlen(this->string_) + strlen(str);
 		char* temp = new char[size + 1];
+
 		for (int i = 0; i < strlen(this->string_); i++)
 			temp[i] = this->string_[i];
 		for (int ii = strlen(this->string_), j = 0; ii <= size; ii++, j++)
 			temp[ii] = str[j];
 
-		this->capacity += sizeof(str);
+		this->capacity += sizeof(capacity);
 		delete this->string_;
 		this->string_ = temp;
-
+	
 		this->length += strlen(str);
 		return *this;
 	}
-	
 	friend ostream & operator<<(ostream & cout, const string_c & str)
 	{
 		cout << str.string_;
@@ -253,7 +256,6 @@ public:
 	{
 		return string_;
 	}
-	// 5 пункт переделал  методы инт и дабл
 	operator int() const
 	{
 		int val = 0;
@@ -284,7 +286,6 @@ public:
 		}
 		return -1;
 	}
-	// 6 пункт оптимизировал интекс оф
 	int IndexOf(string_c str)
 	{
 		for (int i = 0; i < strlen(string_); i++)
@@ -303,15 +304,7 @@ public:
 		}
 		return -1;
 	}
-	int IndexOfAny(string_c str)
-	{
-		for(int i = 0; i < strlen(string_); i++)
-		{
-			if (string_[i] == str.string_[i])
-				return i;
-		}
-		return -1;
-	}
+	bool IndexOfAny(string_c str){		return strstr(string_, str.string_);	}
 	void Normalize()
 	{
 		//_strset(string_, ' ');
@@ -388,7 +381,6 @@ public:
 		string_ = temp;
 		temp = nullptr;
 	}
-	// 7 пункт убрал  один ремув
 	void Remove(int val){ string_c::Remove(val, strlen(string_)); }
 	void Remove(int ind, int val)
 	{
@@ -427,34 +419,10 @@ public:
 	}
 	void Replace(string_c substr, string_c rep)
 	{	
-		int val1;
-		int chek = 0;
-		for (int i = 0, j=0; i < strlen(string_); i++)
-		{
-			if (string_[i] == substr.string_[0])
-			{
-				for (int k = i, j = 0; j < strlen(substr.string_); j++, k++)
-				{
-					val1 = i;
-					if (string_[k] == substr.string_[j])
-					{
-						chek = 1;
-					}
-					else
-					{	
-						chek = 0;
-						break;
-					}
-				}
-				if (chek == 1)
-				{
-					for (j = 0; j < strlen(substr.string_); j++, val1 ++)
-					{
-						string_[val1] = rep[j];
-					}
-				}
-			}
-		}
+		// да Наталья действительно интересно придумала.
+			int id = IndexOf(substr);
+			this->Remove(id, strlen(substr));
+			this->Insert(rep, id);
 	}
 	string_c* split(char separator, int& pieces)
 	{
@@ -499,41 +467,36 @@ public:
 	}
 	void Trim()
 	{
-
-		int first = 0, last = 0;
-		for (int i = 0; i < strlen(string_); i++)
-		{
-			if (string_[i] != ' ')
-			{
-				first = i;
-				break;
-			}
-		}
-		for (int i = strlen(string_)-1; i > 0; i--)
-		{
-			if (string_[i] != ' ')
-			{
-				last = i;
-				break;
-			}
-		}
-		char* temp = new char[last - first+2];
-		for (int i = 0, f = first; i < last - first+1; i++, f++)
-		{
-			temp[i] = string_[f];
-		}
-		temp[last - first + 1] = '\0';
-
-		delete[] string_;
-		string_ = temp;
-		temp = nullptr;
-
-		length =   last - first;
-		capacity = sizeof(string_);
+		TrimStart();
+		TrimEnd();
 	}
 	void TrimStart()
 	{
 
+		/*
+		начал новое что-то придумывать, но выходит еще длинее. может я уже устал, но идй нет! 
+		int s = 0;
+		char* temp = new char[strlen(string_)];
+		int k = 0;
+		for (int i = 0; i < strlen(string_); i++)
+		{
+			if (!(string_[i] == ' '))
+			{	
+					temp[k] = string_[i];
+					k++;
+			}
+			else
+			{
+				for (int j = 0; j < strlen(string_); j++)
+				{
+					temp[k] = string_[i];
+				}
+				break;
+			}
+			
+		}*/
+
+		
 		int first = 0;
 		for (int i = 0; i < strlen(string_); i++)
 		{
@@ -549,13 +512,14 @@ public:
 			temp[i] = string_[f];
 		}
 		temp[strlen(string_) - first + 1] = '\0';
-
+		
 		delete[] string_;
 		string_ = temp;
 		temp = nullptr;
-
-		length = strlen(string_) - first;
+		
+		length = strlen(string_);
 		capacity = sizeof(string_);
+		
 	}
 	void TrimEnd()
 	{
@@ -598,18 +562,7 @@ public:
 		length = strlen(string_);
 		capacity = sizeof(string_);
 	}
-	// 8 Пнукт переделал сортировку, по другому не придумал! 
-	void rev()
-	{
-		int i = 0;
-		int k = strlen(string_) - 1;
-		while (i < k)
-		{
-			swap(string_[i], string_[k]);
-			i++;
-			k--;
-		}
-	}
+
 	void SortAZ()
 	{
 		for (int i = 0; i<strlen(string_); i++)
@@ -623,20 +576,24 @@ public:
 	}
 	void SortZA()
 	{
-		this->rev;
-		this->SortAZ;
+		_strrev(string_);
+		this->SortAZ();
+	}
+	char* begin()
+	{
+
+		//int* begin() { return arr; }
+		//int* end() { return arr + N; }
+
+		return  string_;
+	}
+	char* end()
+	{
+		return string_ + strlen(string_);
 	}
 	void Shuffle()
 	{
-		for (int i = 0; i < (strlen(string_) - 1); i++)
-		{
-			int temp = 0;
-			int l = rand() % strlen(string_) ;
-			int k = rand() % strlen(string_)  ;
-			temp = string_[k];
-			string_[k] = string_[l];
-			string_[l] = temp;
-		}
+		random_shuffle(begin(), end());
 	}
 	void RandomFill()
 	{
@@ -699,7 +656,6 @@ public:
 		}
 	}
 };
-// 9 пункт оптимизировал Compare
 static int Compare(string_c fir, string_c sec)
 {
 	Compare(fir, sec);
@@ -773,8 +729,15 @@ void main()
 	s.contact(st, 10);
 	s.print();
 	*/
-	string_c a("1234563890");
+	//string_c a("1234563890");
 	string_c b("   hjanrsgssgd     ");
+	//b.SortZA();
+	b.print_ln();
+	b.Shuffle();
+	// тест сорта ЗА
+	b.print();
+	//b.Trim();
+	//b.print_ln();
 	//a.print();
 	//a.copyto(&b);
 	//b.print();
@@ -806,13 +769,16 @@ void main()
 	for (int i = 0; i < kol_split; i++)
 		gf[i].print_ln();
 	*/
-	b.print(); cout  << "<" << endl;
-	b.Insert("%%%%",5);
-	b.print(); 	cout << "<" << endl;
+	//b.print(); cout  << "<" << endl;
+	//b.Insert("%%%%",5);
+	//b.print(); 	cout << "<" << endl;
 
-	
+	//string_c c = a + b;
 
 	//int size;
 	//char* g = a.split('2', size);
-	
+
+
+
+
 }
