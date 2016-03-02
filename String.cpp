@@ -42,7 +42,7 @@ public:
 		capacity = sizeof(string_);
 		length = strlen(string_) + 1;
 	}
-	string_c(const string_c& str) : string_c(str){}
+	string_c(string_c& str) : string_c(str.string_)	{}
 	~string_c()	{		delete[] string_;	}
 
 	char* get_string()	{		return string_;	}
@@ -81,7 +81,12 @@ public:
 	bool contains(string_c str){ return strpbrk(string_, str.string_) ? false : true; }
 	bool endswith(char* str)
 	{
-		int str_in = strlen(str);
+		// короче не придумал
+		int val = 0;
+		for (int i = 0; i < strlen("sgd"); i++)
+		if (*strstr(string_, str) == string_[strlen(string_)-strlen(str)+i-1]){ val = 0; }	else{ val = 1; }
+			return val;
+		/*int str_in = strlen(str);
 		int str_ = strlen(string_);
 
 		for (int i = str_in, p = str_; i > 0; i--, p--)
@@ -95,18 +100,15 @@ public:
 			{
 				return -1;
 			}
-		}
-	}
-	void clear()
-	{
-		string_ = new char[1];
-		strcpy_s(string_, 1, "");
-		capacity = 0;
-		length = 0;
+		}*/
 	}
 	bool startswith(char* str)
 	{
-		for (int i = 0; i > 0; i++)
+		int val=0;
+		for (int i = 0; i < strlen(str); i++)
+			if (*strstr(string_, str) == string_[0]){ val = 0; }else{ val = 1; }
+			return val; 
+		/*for (int i = 0; i > 0; i++)
 		{
 			if (string_[i] == str[i])
 			{
@@ -117,8 +119,15 @@ public:
 			{
 				return -1;
 			}
-		}
+		}*/
 	}
+	void clear()
+	{
+		string_ = new char[1];
+		strcpy_s(string_, 1, "");
+		capacity = 0;
+		length = 0;
+	}	
 	void copyto(string_c* str)
 	{
 			delete[] str->string_;
@@ -152,48 +161,13 @@ public:
 		}
 		return *this;
 	}
-	friend bool operator==(const string_c& lstr, const string_c& rstr)
-	{
-		if (strcmp(lstr.string_, rstr.string_) == 0 )
-			return 0;
-		else
-			return -1;
-	}
-	friend bool operator>(const string_c& lstr, const string_c& rstr)
-	{
-		if (strcmp(lstr.string_, rstr.string_) > 0)
-			return 0;
-		else
-			return -1;
-	}
-	friend bool operator<(const string_c& lstr, const string_c& rstr)
-	{
-		if (strcmp(lstr.string_, rstr.string_) == -1)
-			return 0;
-		else
-			return -1;
-	}
-	friend bool operator>=(const string_c& lstr, const string_c& rstr)
-	{
-		if (strcmp(lstr.string_, rstr.string_) > 0 && strcmp(lstr.string_, rstr.string_) == 0)
-			return 0;
-		else
-			return -1;
-	}
-	friend bool operator<=(const string_c& lstr, const string_c& rstr)
-	{
-		if (strcmp(lstr.string_, rstr.string_) < 0 && strcmp(lstr.string_, rstr.string_) == 0)
-			return 0;
-		else
-			return -1;
-	}
-	friend bool operator!=(const string_c& lstr, const string_c& rstr)
-	{
-		if (strcmp(lstr.string_, rstr.string_) < 0 && strcmp(lstr.string_, rstr.string_) > 0)
-			return 0;
-		else
-			return -1;
-	}
+	// если в одну строку то так
+	friend bool operator==(const string_c& lstr, const string_c& rstr)	{ return strcmp(lstr.string_, rstr.string_);}
+	friend bool operator>(const string_c& lstr, const string_c& rstr)	{ return strcmp(lstr.string_, rstr.string_);}
+	friend bool operator<(const string_c& lstr, const string_c& rstr)	{ return strcmp(lstr.string_, rstr.string_);}
+	friend bool operator>=(const string_c& lstr, const string_c& rstr)	{ return strcmp(lstr.string_, rstr.string_);}
+	friend bool operator<=(const string_c& lstr, const string_c& rstr)	{ return strcmp(lstr.string_, rstr.string_);}
+	friend bool operator!=(const string_c& lstr, const string_c& rstr)	{ return strcmp(lstr.string_, rstr.string_);}
 	string_c& operator()(const char* str)
 	{
 		strcpy_s(this->string_, strlen(str) + 1, str);
@@ -217,23 +191,14 @@ public:
 		string_c temp1(temp);
 		return temp1;
 	}
-	string_c& operator+=(const string_c& str) 	{		string_c::operator+=(str);	}
-	string_c& operator+=(const char str)	{ string_c::operator+=(str); }
+	string_c& operator+=(const string_c& str) 	{ string_c::operator+=(str); return *this; }
+	string_c& operator+=(const char str)	{ string_c::operator+=(str); return *this; }
 	string_c& operator+=(const char* str)
 	{
-		int size = strlen(this->string_) + strlen(str);
-		char* temp = new char[size + 1];
-
-		for (int i = 0; i < strlen(this->string_); i++)
-			temp[i] = this->string_[i];
-		for (int ii = strlen(this->string_), j = 0; ii <= size; ii++, j++)
-			temp[ii] = str[j];
-
-		this->capacity += sizeof(capacity);
-		delete this->string_;
-		this->string_ = temp;
-	
-		this->length += strlen(str);
+		// не знаю чего но при выподнении данного кода программа вылетает в деструкторе.  хотя адресс остется тотже. а по логике долдно работать!
+		strcat_s(string_, strlen(string_) + strlen(str) + 1, str);
+		capacity += sizeof(str);
+		length += strlen(str);
 		return *this;
 	}
 	friend ostream & operator<<(ostream & cout, const string_c & str)
@@ -290,19 +255,21 @@ public:
 	{
 		for (int i = 0; i < strlen(string_); i++)
 		{
-			if (string_[i] == str.string_[i])
-				return i;
+			char* st = &string_[i];
+			if (st == strstr(string_, str.string_))
+				return 1;
 		}
-		return -1;
+		return 0;
 	}
 	int LastIndexOf(string_c str)
 	{
-		for (int i = strlen(string_); i > 0; i--)
+		for (int i = strlen(string_) - 1; i >= 0; i--)
 		{
-			if (string_[i] == str.string_[i])
+			char* st = &string_[i];
+			if (st == strstr(string_, str.string_))
 				return i;
 		}
-		return -1;
+		return 0;
 	}
 	bool IndexOfAny(string_c str){		return strstr(string_, str.string_);	}
 	void Normalize()
@@ -311,51 +278,19 @@ public:
 	}
 	void PadLeft(int val)
 	{
-		int size = strlen(string_) + val;
-		char* temp = new char[size + 1];
-		for (int i = 0; i < strlen(string_); i++)
-		{
-			temp[i] = string_[i];
-		}
-		for (int i = strlen(string_); i <= size; i++)
-		{
-			temp[i] = ' ';
-		}
-		delete[] string_;
-		string_ = temp;
-		temp = nullptr;
+		for (val; val > 0; val--)			Insert(" ", 0);
 	}
 	void PadRight(int val)
 	{
-		int size = strlen(string_) + val;
-		char* temp = new char[size + 1];
-		for (int i = 0; i < val; i++)
-		{
-			temp[i] = ' ';
-		}
-		for (int i = val, j = 0; i <= size; i++, j++)
-		{
-			temp[i] = string_[j];
-		}
-		delete[] string_;
-		string_ = temp;
-		temp = nullptr;
+		for (val; val > 0; val--)			Insert(" ", strlen(string_));
 	}
 	void PadLeft(char ch, int val )
 	{
-		int size = strlen(string_) + val;
-		char* temp = new char[size + 1];
-		for (int i = 0; i < strlen(string_); i++)
-		{
-			temp[i] = string_[i];
-		}
-		for (int i = strlen(string_); i <= size; i++)
-		{
-			temp[i] = ch;
-		}
-		delete[] string_;
-		string_ = temp;
-		temp = nullptr;
+		for (val; val > 0; val--)			Insert(&ch, 0);
+	}
+	void PadRight(char ch, int val)
+	{
+		for (val; val > 0; val--)			Insert(&ch, strlen(string_));
 	}
 	const string_c* getstring() const
 	{
@@ -365,22 +300,7 @@ public:
 	{
 		return string_;
 	}
-	void PadRight(char ch, int val )
-	{
-		int size = strlen(string_) + val;
-		char* temp = new char[size + 1];
-		for (int i = 0; i < val; i++)
-		{
-			temp[i] = ch;
-		}
-		for (int i = val, j = 0; i <= size; i++, j++)
-		{
-			temp[i] = string_[j];
-		}
-		delete[] string_;
-		string_ = temp;
-		temp = nullptr;
-	}
+
 	void Remove(int val){ string_c::Remove(val, strlen(string_)); }
 	void Remove(int ind, int val)
 	{
@@ -426,36 +346,22 @@ public:
 	}
 	string_c* split(char separator, int& pieces)
 	{
-		int kol = 1;
-		for (int i = 0; i < strlen(string_); i++)
+		int kol = 0, i;
+		char* g;
+		for (i = 0; i < strlen(string_); i++)
+			if (string_[i] == separator)kol++;
+		pieces = kol+1;
+		string_c* temp = new string_c[pieces];
+		char* h = string_;
+		char* pch = strtok_s(h, &separator, &g);
+		i = 0;
+		while (pch != NULL)
 		{
-			if ((char)string_[i] == separator)
-				 kol++;
+			temp[i].string_ = pch; i++;
+			h = g;
+			pch = strtok_s(h, &separator, &g);
 		}
-		if (kol > 1)
-		{
-			int kol2 = 2;
-			string_c* temp = new string_c[kol];
-			pieces = kol;
-			for (int i = 0, p = 0, y = 0; i < strlen(string_); i++)
-			{
-				if (string_[i] == separator)
-				{
-					temp[p].string_[y] = '\0';
-					p++;
-					y=0;
-					continue;
-				}
-				temp[p].string_[y] = string_[i];
-				temp[p].length++;
-				temp[p].capacity = sizeof(temp[p].string_);
-				y++;
-				if (i == strlen(string_)-1)
-					temp[p].string_[y] = '\0';
-			}
-			return temp;
-		}
-		return nullptr;
+		return temp;
 	}
 	void ToLower()
 	{
@@ -471,98 +377,51 @@ public:
 		TrimEnd();
 	}
 	void TrimStart()
-	{
-
-		/*
-		начал новое что-то придумывать, но выходит еще длинее. может я уже устал, но идй нет! 
-		int s = 0;
-		char* temp = new char[strlen(string_)];
-		int k = 0;
-		for (int i = 0; i < strlen(string_); i++)
-		{
-			if (!(string_[i] == ' '))
-			{	
-					temp[k] = string_[i];
-					k++;
-			}
-			else
-			{
-				for (int j = 0; j < strlen(string_); j++)
-				{
-					temp[k] = string_[i];
-				}
-				break;
-			}
-			
-		}*/
-
-		
-		int first = 0;
-		for (int i = 0; i < strlen(string_); i++)
+	{		// короче не придумал
+		char* temp;
+		int i, k;
+		for (i = 0; i < strlen(string_); i++)
 		{
 			if (string_[i] != ' ')
 			{
-				first = i;
+				int val = strlen(string_) - i;
+				temp = new char[val+1];
+				for (k = 0; k < val; k++, i++)
+					temp[k] = string_[i];
+				temp[k] = '\0';
+				delete[] string_;
+				string_ = temp;
+				temp = nullptr;
 				break;
 			}
-		}
-		char* temp = new char[strlen(string_) - first + 2];
-		for (int i = 0, f = first; i < strlen(string_) - first + 1; i++, f++)
-		{
-			temp[i] = string_[f];
-		}
-		temp[strlen(string_) - first + 1] = '\0';
-		
-		delete[] string_;
-		string_ = temp;
-		temp = nullptr;
-		
+		}	
 		length = strlen(string_);
 		capacity = sizeof(string_);
-		
 	}
 	void TrimEnd()
 	{
-		int  last = 0;
-		for (int i = strlen(string_) - 1; i > 0; i--)
+		char* temp;
+		int i, k;
+		for (i = strlen(string_)-1; i > 0; i--)
 		{
 			if (string_[i] != ' ')
 			{
-				last = i;
+				int val = strlen(string_) - (strlen(string_) - i);
+				temp = new char[val + 2];
+				temp[val+1] = '\0';
+				for (k = val; k >= 0; k--, i--)
+					temp[k] = string_[i];
+				
+				delete[] string_;
+				string_ = temp;
+				temp = nullptr;
 				break;
 			}
 		}
-		char* temp = new char[strlen(string_) - (strlen(string_) - last) + 2];
-		for (int i = 0, f = 0; i < strlen(string_) - (strlen(string_) - last) + 1; i++, f++)
-		{
-			temp[i] = string_[f];
-		}
-		temp[strlen(string_) - (strlen(string_) - last) + 1] = '\0';
-
-		delete[] string_;
-		string_ = temp;
-		temp = nullptr;
-
-		length = strlen(string_) - (strlen(string_) - last);
-		capacity = sizeof(string_);
-	}
-	void Reverse()
-	{	
-		char* temp = new char[strlen(string_)+1];
-		for (int i = 0, f = strlen(string_)-1; i < strlen(string_); i++, f--)
-		{
-			temp[i] = string_[f];
-		}
-		temp[strlen(string_)] = '\0';
-
-		delete[] string_;
-		string_ = temp;
-		temp = nullptr;
-
 		length = strlen(string_);
 		capacity = sizeof(string_);
 	}
-
+	void Reverse()	{		_strrev(string_);	}
 	void SortAZ()
 	{
 		for (int i = 0; i<strlen(string_); i++)
@@ -576,15 +435,11 @@ public:
 	}
 	void SortZA()
 	{
-		_strrev(string_);
 		this->SortAZ();
+		_strrev(string_);
 	}
 	char* begin()
 	{
-
-		//int* begin() { return arr; }
-		//int* end() { return arr + N; }
-
 		return  string_;
 	}
 	char* end()
@@ -678,105 +533,19 @@ static int Compare(string_c fir, char* sec)
 void main()
 {
 	srand(time(NULL));
-	/*
-	char* str_test = "1) Hello world";
-	string_c s(str_test);
-	s.print();
-	string_c d("2) Hello");
-	d.print();
-	cout << setw(3) << "==" << setw(3);
-	if (d == s) cout << "-1"; else cout << "0"; cout << endl;
-	cout << setw(3) << "<" << setw(3);
-	if (d > s) cout << "-1"; else cout << "0"; cout << endl;
-	cout << setw(3) << ">" << setw(3);
-	if (d < s) cout << "-1"; else cout << "0"; cout << endl;
-	cout << setw(3) << ">=" << setw(3);
-	if (d >= s) cout << "-1"; else cout << "0"; cout << endl;
-	cout << setw(3) << "<=" << setw(3);
-	if (d <= s) cout << "-1"; else cout << "0"; cout << endl;
-	d("Privet");
-	d.print();
-	cout << setw(3) << "6" << setw(3);
-	cout << d[6]; cout << endl;
-	cout << setw(3) << "4" << setw(3);
-	cout << d[4]; cout << endl;
-	d = d + s;
-	d.print();
-	d += s;
-	d.print();
-	d += "dddd";
-	d.print(); cout << endl;
-	//cout << "String - " << d;
-	//cin >> d;
-	d.print(); cout << endl;
-	cout << "convert to char -  " << (char*)d << endl;
-	cout << "convert to int -  " << (int)d << endl;
-	cout << "convert to double -  " << (double)d << endl;
-	d.print();
-	//d.getLine();
-	d.print();
-	cout << endl << d.compare_to(s);
-	cout << endl << d.compare_to("Test");
-*/
-	//string_c s;
 
-	//char* st[10] = { "aaa", "ddd", "ggg", "qqq", "bbb", "nnn", "mmm", "jjj", "uuu", "ttt" };
-	//strcat_s(st[0],2, "d");
-	
-	
-	/*
-	s.print();
-	s.contact(st, 10);
-	s.print();
-	*/
-	//string_c a("1234563890");
-	string_c b("   hjanrsgssgd     ");
-	//b.SortZA();
-	b.print_ln();
-	b.Shuffle();
-	// тест сорта ЗА
-	b.print();
-	//b.Trim();
-	//b.print_ln();
-	//a.print();
-	//a.copyto(&b);
-	//b.print();
-	//cout << endl;
-	//b.clear();
-	//cout << b.IndexOf('d') << endl;
-	//cout << b.IndexOf('g') << endl;
-	//cout << endl << b.IndexOf(a);
-	//b.Normalize();
-	//b.print();
-	//a.PadRight(10);
-	//a.print();
-	//a.print();
-	//a.Remove(3);
-	//a.Remove(3, 3);
-	//a.Replace('4', '0');
-	//string_c test1("456");
-	//string_c test2("000");
-	//a.Replace(test1, test2);
-	
-	//string_c n;
-	//n.print_ln();
 
-	/*
-	int kol_split;
+	string_c b("123453893dfg");
+	b.TrimEnd();
+
+	char a = '3';
+	int kol;
 	string_c* gf;
-	gf = a.split('3', kol_split);
-	
-	for (int i = 0; i < kol_split; i++)
+	gf = b.split(a, kol );
+	for (int i = 0; i < kol; i++)
 		gf[i].print_ln();
-	*/
-	//b.print(); cout  << "<" << endl;
-	//b.Insert("%%%%",5);
-	//b.print(); 	cout << "<" << endl;
 
-	//string_c c = a + b;
-
-	//int size;
-	//char* g = a.split('2', size);
+	//b.print_ln();
 
 
 
