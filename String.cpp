@@ -81,26 +81,10 @@ public:
 	bool contains(string_c str){ return strpbrk(string_, str.string_) ? false : true; }
 	bool endswith(char* str)
 	{
-		// короче не придумал
 		int val = 0;
 		for (int i = 0; i < strlen("sgd"); i++)
 		if (*strstr(string_, str) == string_[strlen(string_)-strlen(str)+i-1]){ val = 0; }	else{ val = 1; }
 			return val;
-		/*int str_in = strlen(str);
-		int str_ = strlen(string_);
-
-		for (int i = str_in, p = str_; i > 0; i--, p--)
-		{
-			if (string_[p] == str[i])
-			{
-				if (str_in = 0) return 0;
-				continue;
-			}
-			else
-			{
-				return -1;
-			}
-		}*/
 	}
 	bool startswith(char* str)
 	{
@@ -108,18 +92,6 @@ public:
 		for (int i = 0; i < strlen(str); i++)
 			if (*strstr(string_, str) == string_[0]){ val = 0; }else{ val = 1; }
 			return val; 
-		/*for (int i = 0; i > 0; i++)
-		{
-			if (string_[i] == str[i])
-			{
-				if (i = strlen(str)) return 0;
-				continue;
-			}
-			else
-			{
-				return -1;
-			}
-		}*/
 	}
 	void clear()
 	{
@@ -161,13 +133,14 @@ public:
 		}
 		return *this;
 	}
-	// если в одну строку то так
+
 	friend bool operator==(const string_c& lstr, const string_c& rstr)	{ return strcmp(lstr.string_, rstr.string_);}
 	friend bool operator>(const string_c& lstr, const string_c& rstr)	{ return strcmp(lstr.string_, rstr.string_);}
 	friend bool operator<(const string_c& lstr, const string_c& rstr)	{ return strcmp(lstr.string_, rstr.string_);}
 	friend bool operator>=(const string_c& lstr, const string_c& rstr)	{ return strcmp(lstr.string_, rstr.string_);}
 	friend bool operator<=(const string_c& lstr, const string_c& rstr)	{ return strcmp(lstr.string_, rstr.string_);}
 	friend bool operator!=(const string_c& lstr, const string_c& rstr)	{ return strcmp(lstr.string_, rstr.string_);}
+
 	string_c& operator()(const char* str)
 	{
 		strcpy_s(this->string_, strlen(str) + 1, str);
@@ -191,12 +164,30 @@ public:
 		string_c temp1(temp);
 		return temp1;
 	}
-	string_c& operator+=(const string_c& str) 	{ string_c::operator+=(str); return *this; }
-	string_c& operator+=(const char str)	{ string_c::operator+=(str); return *this; }
+	string_c& operator+=(const string_c& str) 	{		operator+=(str.string_); return *this;		return *this;	}
+	string_c& operator+=(const char str)		{		operator+=(str); return *this; 		return *this;	}
 	string_c& operator+=(const char* str)
 	{
-		// не знаю чего но при выподнении данного кода программа вылетает в деструкторе.  хотя адресс остется тотже. а по логике долдно работать!
-		strcat_s(string_, strlen(string_) + strlen(str) + 1, str);
+		// я  не могу определить чего но при выподнении данного кода программа вылетает в деструкторе.  хотя адресс остется тотже. а по логике должно работать!
+		// можно узнать ответ в чем проблема?
+		// реализовал по другому. Но код больше !
+		//strcat_s(string_, strlen(string_) + strlen(str) + 1, str);
+
+		char* temp = new char[strlen(string_) + strlen(str) + 1];
+		for (int i = 0, k = 0; i < strlen(string_) + strlen(str) + 1; i++)
+		{
+			if (i <= strlen(string_)-1)
+				temp[i] = string_[i];
+			else
+			{
+				temp[i] = str[k];
+				k++;
+			}
+		}
+		delete[] string_;
+		string_ = temp;
+		temp = nullptr;
+
 		capacity += sizeof(str);
 		length += strlen(str);
 		return *this;
@@ -233,44 +224,21 @@ public:
 		val = atof(string_);
 		return val;
 	}
+	// лучше придумать не могу , как оптимизировать!
 	int IndexOf(char chr)
 	{
 		for (int i = 0; i < strlen(string_); i++)
-		{
-			if (string_[i] == chr)
-				return i;
-		}
+			if (string_[i] == chr)		return i;
 		return -1;
 	}
 	int LastIndexOf(char chr)
 	{
-		for (int i = strlen(string_); i > 0; i--)
-		{
-			if (string_[i] == chr)
-				return i;
-		}
-		return -1;
+		_strrev(string_);
+		return IndexOf(chr);
+		_strrev(string_);
 	}
-	int IndexOf(string_c str)
-	{
-		for (int i = 0; i < strlen(string_); i++)
-		{
-			char* st = &string_[i];
-			if (st == strstr(string_, str.string_))
-				return 1;
-		}
-		return 0;
-	}
-	int LastIndexOf(string_c str)
-	{
-		for (int i = strlen(string_) - 1; i >= 0; i--)
-		{
-			char* st = &string_[i];
-			if (st == strstr(string_, str.string_))
-				return i;
-		}
-		return 0;
-	}
+	int IndexOf(string_c str)	{		return IndexOf(str.string_[0]);	}
+	int LastIndexOf(string_c str)	{		return LastIndexOf(str.string_[0]);	}
 	bool IndexOfAny(string_c str){		return strstr(string_, str.string_);	}
 	void Normalize()
 	{
@@ -534,9 +502,60 @@ void main()
 {
 	srand(time(NULL));
 
+	string_c c("1");
+	string_c b("123456");
 
-	string_c b("123453893dfg");
-	b.TrimEnd();
+	// реализация индекс
+	cout << b.LastIndexOf(c) << endl;
+
+	// а как еще проверить операторы?, все рабоатет! 
+	cout << "Operator == -\t";
+	if (c == b)
+		cout << true;
+	else
+		cout << false;
+	cout << endl;
+
+	cout << "Operator < -\t";
+	if (c < b)
+		cout << true;
+	else
+		cout << false;
+	cout << endl;
+
+	cout << "Operator > -\t";
+	if (c > b)
+		cout << true;
+	else
+		cout << false;
+	cout << endl;
+
+	cout << "Operator <= -\t";
+	if (c <= b)
+		cout << true;
+	else
+		cout << false;
+	cout << endl;
+
+	cout << "Operator >= -\t";
+	if (c >= b)
+		cout << true;
+	else
+		cout << false;
+	cout << endl;
+
+	cout << "Operator != -\t";
+	if (c != b)
+		cout << true;
+	else
+		cout << false;
+	cout << endl;
+
+	c += b;
+
+	c.print_ln();
+
+	/*b.TrimEnd();
 
 	char a = '3';
 	int kol;
@@ -547,7 +566,7 @@ void main()
 
 	//b.print_ln();
 
-
+	*/
 
 
 }
