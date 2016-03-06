@@ -1,0 +1,126 @@
+#include "iostream"
+using namespace std;
+
+class  bank
+{
+	static double* history_banka;
+	static int size_hist_banka;
+	static char* name_banka;
+	static double all_bal;
+	static int kol_filialov;
+	char* name_filiala;
+	int id_filiala;
+	double* history_filiala;
+	int size_hist_fil;
+	double fil_bal;
+	double procent;
+
+	void add_hist(double val)
+	{
+		history_banka[size_hist_banka-1] = val;
+		size_hist_banka++;
+		double* temp = new double[size_hist_banka];
+		for (int i = 0; i < size_hist_banka; i++)
+					temp[i] = history_banka[i];
+		delete[] history_banka;
+		this->history_banka = temp;
+		
+		history_filiala[size_hist_fil-1] = val;
+		size_hist_fil++;
+		temp = new double[size_hist_fil];
+		for (int i = 0; i < size_hist_fil; i++)
+			temp[i] = history_filiala[i];
+		delete[] history_filiala;
+		this->history_filiala = temp;
+		temp = nullptr;
+	}
+
+public:
+	
+	bank() :bank(0, "Noname"){}
+	bank(double val) :bank(val, "Noname"){}
+	bank(char* name_fil) :bank(0, name_fil){}
+	bank(double val, char* name_fil)
+	{
+		name_filiala = name_fil;
+		fil_bal = val;
+		size_hist_fil = 1;
+		history_filiala = new double[1];
+		history_filiala[0] = val;
+		add_hist(val);
+		all_bal += fil_bal;
+		procent = 10;
+		kol_filialov++;
+		id_filiala = kol_filialov;
+	}	
+	~bank()	
+	{
+		if (size_hist_banka < 1)
+			delete[] history_banka;
+		delete[] history_filiala;
+	}
+	double get_balanc_filiala()	{ return fil_bal;	}
+	double get_balance_banka()	{ return all_bal;	}
+	double get_procent(){ return procent; }
+	void set_name_bank(char* name){name_banka = name;}
+	void set_name_filiala(char* name){name_filiala = name;}
+	void vnesti_deposit(double val)	{ fil_bal -= val; all_bal -= val; }
+	void out_deposit_with_procent(double val)
+	{
+		int temp;
+		temp = ((val / 100) * (100 + procent));
+		fil_bal -= temp;
+		all_bal -= temp;
+	}
+	void in_platej_po_creditu(double val)
+	{
+		double temp = val = (val / 100) * (100 - procent);
+		add_hist(temp);
+		fil_bal += temp;
+		all_bal += temp;
+	}
+	void print()
+	{
+		cout << endl;
+		cout << "\t\tИнформация банка " << endl;
+		cout << "Название банка\t\t " << name_banka << endl;
+		cout << "Процент \t\t " << procent << " %" << endl ;
+		cout << "Количество филиалов \t " << kol_filialov << endl;
+		cout << "Баланс банка\t\t " << all_bal << " грн." << endl;
+		for (int i = 0; i < size_hist_banka - 1; i++)
+			cout << "\tТранзакция " << i + 1 << "\t\t " << history_banka[i] << " грн." << endl;
+		
+	}
+	void print_fil()
+	{
+		cout << endl;
+		cout << "\t\tИнформация филиала " << endl;
+		cout << "Название филиала\t " << name_filiala << " st." << endl;
+		cout << "№ филиала \t\t " << id_filiala << endl;
+		cout << "Баланс филиала \t\t " << fil_bal << " грн." << endl;
+		for (int i = 0; i < size_hist_fil - 1; i++)
+			cout << "\tТранзакция " << i + 1 << "\t\t " << history_filiala[i] << " грн." << endl;
+	}
+};
+double bank::all_bal = 0;
+int bank::kol_filialov = 0;
+char* bank::name_banka = "ПАТ 'Приват Банк'";
+double* bank::history_banka = new double[1];
+int bank::size_hist_banka = 1;
+
+void main()
+{
+	setlocale(0, "");
+	bank a(956.5);
+	a.in_platej_po_creditu(100.90);
+	a.in_platej_po_creditu(23);
+	a.in_platej_po_creditu(767.7);
+	a.in_platej_po_creditu(34.3);
+	a.set_name_filiala("Bocharova");
+	bank b(2000.56);
+	b.in_platej_po_creditu(100.90);
+	b.set_name_filiala("Paustovskogo");
+	b.out_deposit_with_procent(100);
+	a.print();
+	a.print_fil();	
+}
