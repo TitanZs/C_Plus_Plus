@@ -1,0 +1,520 @@
+#include <iostream>
+#include "string.h"
+#include <string>
+#include "iomanip"
+#include <conio.h>
+#include "time.h"
+#include <vector>
+#include <algorithm>
+#include <functional>
+#include <iostream>
+
+using namespace std;
+
+template<class T>
+class list
+{
+public:
+	struct elem
+	{
+		T data;
+		elem* next;
+		elem(){	next = nullptr;	}
+		elem(const T & val)
+		{
+			this->data = val;
+			next = nullptr;
+		}
+		friend ostream& operator<<(ostream& cout, const  list& L);
+	};
+	int count;
+	elem* tail;
+	elem* head;
+	
+	list()
+	{
+		head = tail = nullptr;
+		count = 0;
+	}
+	list(const list & l)
+	{
+		head = nullptr;
+		count = 0;
+		if (!l.head)return;
+		elem* temp, *temp2 = l.head;
+		head = new elem(temp2->data);
+		temp = head;
+		temp2 = temp2->next;
+		count++;
+		while (temp2)
+		{
+			temp->next = new elem(temp2->data);
+			temp2 = temp2->next;
+			temp = temp->next;
+			++count;
+		}
+	}
+	~list()
+	{
+		elem * temp = head;
+		while (head)
+		{
+			head = head->next;
+			delete temp;
+			temp = head;
+		}
+		head = nullptr;
+		count = 0;
+	}
+	list & operator = (const list & l)
+	{
+		if (this == &l)
+			return *this;
+		this->~list();
+		if (!l.head)
+			return *this;
+		elem * temp, *temp2 = l.head;
+		head = new elem(temp2->data);
+		temp = head;
+		temp2 = temp2->next;
+		++count;
+		while (temp2)
+		{
+			temp->next = new elem(temp2->data);
+			temp2 = temp2->next;
+			temp = temp->next;
+			++count;
+		}
+		return *this;
+	}
+	list operator+(const list & l) const
+	{
+		list newlist;
+		elem * temp = nullptr, *temp2 = nullptr;
+		if (head)
+		{
+			temp2 = head;
+			newlist.head = new elem(temp2->data);
+			temp = newlist.head;
+			temp2 = temp2->next;
+			++newlist.count;
+			while (temp2)
+			{
+				temp->next = new elem(temp2->data);
+				temp2 = temp2->next;
+				temp = temp->next;
+				++newlist.count;
+			}
+		}
+		if (l.head)
+		{
+			temp2 = l.head;
+			if (!newlist.head)
+			{
+				newlist.head = new elem(temp2->data);
+				temp = newlist.head;
+				temp2 = temp2->next;
+				++newlist.count;
+			}
+			while (temp2)
+			{
+				temp->next = new elem(temp2->data);
+				temp2 = temp2->next;
+				temp = temp->next;
+				++newlist.count;
+			}
+		}
+		return newlist;
+	}
+	elem get_head()
+
+	{
+		if (head != nullptr) return *head;
+		else throw "Oops!";
+	}
+	elem* get_element_at(int pos)
+	{
+		if (pos < 0 || pos >= count)
+			throw  "Oops!";
+
+		elem * temp = head;
+		if (pos == 0)
+		{
+			return head;
+		}
+		int i = 0;
+		while (i++ < pos - 1)
+		{
+			temp = temp->next;
+		}
+		return temp;
+	}
+	void insert(T val, int pos)
+	{
+		pos--;
+		int i = 0;
+		if (pos<0 || pos>count)
+			return;
+		elem * temp = head, *temp1 = new elem(val);
+		if (pos == 0)
+		{
+			temp1->next = head;
+			head = temp1;
+			count++;
+			return;
+		}
+		while (i++ < pos - 1)
+		{
+			temp = temp->next;
+		}
+		temp1->next = temp->next;
+		temp->next = temp1;
+		count++;
+	}
+	void add(T data)
+	{
+		elem* temp = new elem();
+		temp->data = data;
+		temp->next = nullptr;
+
+		if (head == nullptr)
+			head = tail = temp;
+		else
+		{
+			tail->next = temp;
+			tail = temp;
+		}
+		count++;
+	}
+	void remove_at(int pos)
+	{
+		if (pos < 0 || pos >= count)
+			return;
+		elem * temp = head, *temp2;
+		if (pos == 0)
+		{
+			head = head->next;
+			delete temp;
+			count--;
+			return;
+		}
+		int i = 0;
+		while (i++ < pos - 1)
+		{
+			temp = temp->next;
+		}
+		temp2 = temp->next;
+		temp->next = temp->next->next;
+		delete temp2;
+		count--;
+	}
+	void remove_head()
+	{
+		elem* temp = head;
+		head = head->next;
+		delete temp;
+		count--;
+	}
+	void clear()
+	{
+		while (head != nullptr)
+			remove_head();
+	}
+	void print() const
+	{
+		elem* temp = head;
+		while (temp)
+		{
+			cout << temp->data << " ";
+			temp = temp->next;
+		}
+		cout << "\n\n";
+	}
+	void sort()
+	{
+		if (count < 2)
+			return;
+		elem* ins_temp, *last, *temp_new;
+		ins_temp = head->next;
+		last = ins_temp->next;
+		head->next = nullptr;
+		while (last)
+		{
+			last = ins_temp->next;
+			ins_temp->next = nullptr;
+			temp_new = head;
+			if (ins_temp->data < head->data)
+			{
+				ins_temp->next = head;
+				head = ins_temp;
+			}
+			else
+			{
+				while (temp_new->next && temp_new->next->data < ins_temp->data)
+					temp_new = temp_new->next;
+				ins_temp->next = temp_new->next;
+				temp_new->next = ins_temp;
+			}
+			ins_temp = last;
+		}
+	}
+	void reverse()
+	{
+		elem* next, *curr, *prev = nullptr;
+		curr = head;
+		while (curr)
+		{
+			next = curr->next;
+			curr->next = prev;
+			prev = curr;
+			curr = next;
+		}
+		head = prev;
+	}
+	void r_print(const elem* ele = nullptr) const
+	{
+		if (!head)
+			return;
+		if (!ele)
+			ele = head;
+		if (ele->next)
+			r_print(ele->next);
+		cout << ele->data;
+	}
+	void add_range(int* array)
+
+	{
+		int i = 0;
+		while (array[i])
+		{
+			Add(array[i]);
+			i++;
+		}
+	}
+	void insert_range(int* arr, int size, int pos)
+	{
+		if (pos<0 || pos>count)
+			return;
+		int i = 0;
+		while (i<size)
+		{
+			insert(arr[i], pos);
+			i++;
+			pos++;
+		}
+	}
+	void remove(int num)
+	{
+		num--;
+		int i = 0;
+		if (head->data = num)
+		{
+			remove_head();
+			return;
+		}
+		elem * temp = head, *temp2;
+		while (i++ < count)
+		{
+			temp = temp->next;
+			if (temp->data == num)
+			{
+				temp2 = temp->next;
+				temp->next = temp->next->next;
+				delete temp2;
+				count--;
+				return;
+			}
+		}
+	}
+	void remove_all(int num)
+	{
+		num--;
+		if (head->data == num)
+			remove_head();
+		elem* temp = head, *temp2;
+		int i = 0;
+		while (i++ < count-1)
+		{
+			temp = temp->next;
+			if (temp->data == num)
+			{
+				temp2 = temp->next;
+				temp->next = temp->next->next;
+				delete temp2;
+				count--;
+			}
+		}
+	}
+	int index_of(int num)
+	{
+		if (head->data == num)
+			return 0;
+		elem * temp = head, *temp2;
+		
+		for (int i = 0; i < count-1; i++)
+		{
+			temp = temp->next;
+			if (temp->data == num)
+			{
+				return i;
+			}
+			
+		}
+		return -1;
+	}
+	int last_index_of(int num)
+	{
+		elem * temp = head, *temp2;
+		int t = 0;
+		for (int i = 0; i < count-1; i++)
+		{
+			temp = temp->next;
+			if (temp->data == num)
+			{
+				t = i;
+				break;
+			}
+		}
+		if (t)
+			return t-1;
+		else
+			return -1;
+	}
+	int search_index(int num)
+	{
+		if (head->data == num)
+			return 0;
+		elem * temp = head;
+		int i = 0;
+		while (i++ < count)
+		{
+			temp = temp->next;
+			if (temp->data == num)
+			{
+				return i;
+			}
+		}
+	}
+	int operator [](int pos)
+	{
+		if (pos == 0)
+			return head->data;
+		elem * temp = head;
+		int i = 0;
+		while (i++ < pos)
+			temp = temp->next;
+		return temp->data;
+	}
+	int* to_array()
+	{
+		int* arr = new int[count];
+		elem * temp = head;
+		for (int i = 0; i < count; i++)
+		{
+			arr[i] = temp->data;
+			temp = temp->next;
+		}
+		return arr;
+	}
+	int get_count() const{	return count;}
+	bool contains(int val) const
+	{
+		if (head->data == val)
+			return true;
+		elem * temp = head, *temp2;
+		int i = 0;
+		while (i++ < count-1)
+		{
+			temp = temp->next;
+			if (temp->data == val)
+				return true;
+		}
+		return false;
+	}
+	bool equals(const list& l) const
+	{
+		if (count != l.count)
+			return false;
+		elem * temp = head, *temp2 = l.head;
+		if (temp->data != temp2->data)
+			return false;
+		while (temp)
+		{
+			temp = temp->next;
+			temp2 = temp2->next;
+			if (temp->data != temp2->data)
+				return false;
+		}
+		return true;
+	}
+	bool operator == (const list& l) const
+	{
+		if (count != l.count)
+			return false;
+		elem * temp = head, *temp2 = l.head;
+		if (temp->data != temp2->data)
+			return false;
+		while (temp)
+		{
+			temp = temp->next;
+			temp2 = temp2->next;
+			if (temp->data != temp2->data)
+				return false;
+		}
+		return true;
+	}
+	friend ostream& operator<<(ostream& cout, const  list& L)
+	{
+		elem* temp = L.head;
+		while (temp)
+
+		{
+			cout << temp->data << " ";
+			temp = temp->next;
+		}
+		cout << "\n\n";
+
+		return cout;
+	}
+};
+void main()
+{
+	list<int> a;
+	a.add(11);
+	a.add(2);
+	a.add(3);
+	a.add(8);
+	a.add(9);
+	a.add(19);
+	a.add(3);
+	a.add(123);
+	//a.remove_at(2);
+	//a.remove_head();
+	//a.clear();
+	//a.sort();
+
+	a.print();
+	//a.r_print();
+	//cout << endl;
+	//a.reverse();
+	//a.print();
+	//int arr[10] = { 1, 6, 6, 7, 9, 5, 7, 5, 5,6 };
+	//list<int> b;
+	//b.insert_range(arr,10,0);
+	//a.remove(4);
+	a.remove_all(9); // не доделал
+
+	//cout << a.index_of(4) << endl;
+	//cout << a.last_index_of(19) << endl;
+
+	//cout << a.search_index(3) << endl;
+	//cout << a[2] << endl;
+	//int* g;
+	//g = a.to_array();
+	//cout << g[0] << endl;
+	//cout << a.contains(4) << endl;
+	//cout << a.equals(b) << endl;
+	//if (a == b) cout << "asd";
+	a.print();
+	//cout << a << endl;
+}
