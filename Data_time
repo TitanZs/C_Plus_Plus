@@ -1,0 +1,232 @@
+#include "iostream"
+#include "iomanip"
+#include "time.h"
+
+using namespace std;
+
+char* d(int day_)
+{
+	char* _day;
+	switch (day_)
+	{
+	case 1:
+		_day = "Понедельник";
+		break;
+	case 2:
+		_day = "Вторник";
+		break;
+	case 3:
+		_day = "Среда";
+		break;
+	case 4:
+		_day = "Четверг";
+		break;
+	case 5:
+		_day = "Пятница";
+		break;
+	case 6:
+		_day = "Суббота";
+		break;
+	case 7:
+		_day = "Воскресенье";
+		break;
+	case 0:
+		_day = "Воскресенье";
+		break;
+	default:
+		_day = "Не известно";
+	}
+	return _day;
+}
+char* m(int m)
+{
+	char* dat;
+	switch (m)
+	{
+	case 1:
+		dat = "Январь";
+		break;
+	case 2:
+		dat = "Февраль";
+		break;
+	case 3:
+		dat = "Март";
+		break;
+	case 4:
+		dat = "Апрель";
+		break;
+	case 5:
+		dat = "Май";
+		break;
+	case 6:
+		dat = "Июнь";
+		break;
+	case 7:
+		dat = "Июль";
+		break;
+	case 8:
+		dat = "Август";
+		break;
+	case 9:
+		dat = "Сентабрь";
+		break;
+	case 10:
+		dat = "Октябрь";
+		break;
+	case 11:
+		dat = "Ноябрь";
+		break;
+	case 12:
+		dat = "Декабрь";
+		break;
+	default:
+		dat = "Не известно";
+	}
+	return dat;
+}
+
+int value_day[12] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+class data_time
+{
+	int year;
+	int month;
+	int day;
+	int hour;
+	int minutes;
+	int second;
+
+	void check(int& y, int& m, int& d, int& h, int& min, int& sec)
+	{
+		if (sec > 59){ min++; sec = 0; }
+		if (min > 59){ h++; min = 0; }
+		if (h > 24) {d++; h = 0;}
+		if (d > value_day[m]){ m++; d = 1; }
+		if (m > 12){ y++; m = 1; }
+	}
+
+	static int kol_day(data_time* dat)
+	{
+		int val = (dat->year * 365);
+		for (int i = 0; i < dat->month; i++)
+			val += value_day[i];
+		val += dat->day;
+		return val;
+	}
+
+
+public:
+	data_time() : data_time(6, 3, 2016, rand() % 24, rand() % 59, rand() % 59){	}
+	data_time(int d, int m, int y, int h, int min, int s)
+	{
+		check(y, m, d, h, min, s);
+		year = y;
+		month = m;
+		day = d;
+		hour = h;
+		minutes = min;
+		second = s;
+	}
+	void set_data(int y, int m, int d) 
+	{
+		check(y, m, d, hour, minutes, second);
+		year = y;
+		month = m;
+		day = d;
+	}
+	void set_time(int h, int min, int s)
+	{
+		check(year, month, day, h, min, s);
+		hour = h;
+		minutes = min;
+		second = s;
+	}
+	void PrintDate()
+	{
+		cout << setw(2) << day << "-" << setw(7) << m(month) << "-" << setw(4) << year << " " << setw(2) << hour << ":" << setw(2) << minutes << ":" << setw(2) << second << endl;
+	}
+	data_time operator=(const data_time & dat)
+	{
+		data_time temp;
+		int d = dat.year;
+		int m = dat.month;
+		int y = dat.year;
+		int h = dat.hour;
+		int min = dat.minutes;
+		int s = dat.second;
+		check(y, m, d, h, min, s);
+		temp.year = y;
+		temp.month = m;
+		temp.day = d;
+		temp.hour = h;
+		temp.minutes = min;
+		temp.second = s;
+		return temp;
+	}
+
+	int operator-(data_time& dat)
+	{
+		int left_dat = kol_day(this);
+		int right_dat = kol_day(&dat);
+		return left_dat - right_dat;
+	}
+	data_time operator+(const data_time & dat)
+	{
+		data_time temp;
+		int d = year + dat.year;
+		int m = month + dat.month;
+		int y = year + dat.year;
+		int h = hour + dat.hour;
+		int min = minutes + dat.minutes;
+		int s = second + dat.second;
+		check(y, m, d, h, min, s);
+		temp.year = y;
+		temp.month = m;
+		temp.day = d;
+		temp.hour = h;
+		temp.minutes = min;
+		temp.second = s;
+		return temp;
+	}
+
+	friend bool operator==( data_time& lstr,  data_time& rstr)	{		if (kol_day(&lstr) == kol_day(&rstr))	{ return 1; }else{return 0; }	}
+	friend bool operator>(data_time& lstr, data_time& rstr)		{		if (kol_day(&lstr) > kol_day(&rstr))	{ return 1; }else{return 0;	}	}
+	friend bool operator<( data_time& lstr,  data_time& rstr)	{ 		if (kol_day(&lstr) < kol_day(&rstr))	{ return 1; }else{return 0;	}	}
+	friend bool operator>=(data_time& lstr, data_time& rstr)	{		if (kol_day(&lstr) >= kol_day(&rstr))	{ return 1; }else{return 0;	}	}
+	friend bool operator<=( data_time& lstr,  data_time& rstr)	{		if (kol_day(&lstr) <= kol_day(&rstr))	{ return 1; }else{return 0; }	}
+	friend bool operator!=( data_time& lstr,  data_time& rstr)	{ 		if (kol_day(&lstr) != kol_day(&rstr))	{ return 1; }else{return 0; }	}
+
+	char *DayOfWeek() const
+	{
+		return d((year+month + day) % 7+1);
+	}
+
+};
+
+void main()
+{
+	srand(time(NULL));
+	setlocale(0, "");
+	data_time a;
+	data_time b;
+	b.set_data(2015, 10, 6);
+	b.set_time(10, 15, 14);
+	a.set_data(2015, 10, 6);
+	a.set_time(10, 15, 14);
+	a.PrintDate();
+	b.PrintDate();
+	data_time c = a + b;
+	c.PrintDate();
+	cout << (a - b) << endl;
+	cout << (a == b) << endl;
+	cout << (a > b) << endl;
+	cout << (a < b) << endl;
+	cout << (a <= b) << endl;
+	cout << (a >= b) << endl;
+	cout << (a != b) << endl;
+
+	
+	char* t = a.DayOfWeek();
+	cout << t << endl;
+	
+}
