@@ -1,0 +1,97 @@
+#include "iostream"
+#include "Data.h"
+
+using namespace std;
+
+class student
+{
+protected:
+	char* name_stud;
+	int age;
+	int kol_bals;
+	int* bals;
+	data_time data_reg;
+public:
+	student() :student("Noname", 0, 2016, 0, 0){}
+	student(char* name, int age, int y, int m, int d)
+	{
+		kol_bals = 0;
+		name_stud = name;
+		this->age = age;
+		data_reg.set_data(y, m, d);
+	}
+	void add_bals(int bal)
+	{
+		int i;
+		int* temp = new int[kol_bals + 1];
+		for (i = 0; i < kol_bals; i++)
+			temp[i] = bals[0];
+		if (kol_bals != 0)
+			delete[] bals;
+		temp[i] = bal;
+		bals = temp;
+		temp = nullptr;
+		kol_bals++;
+	}
+	void set_data_reg(int y, int m, int d){data_reg.set_data(y, m, d);}
+	void print()
+	{
+		cout << "Name:\t" << name_stud << endl;
+		cout << "Age:\t" << age << endl;
+		if (kol_bals > 0)
+		{
+			cout << "Bals:\t" << endl;
+			for (int i = 0; i < kol_bals; i++)
+				cout << "\t" << bals[i] << endl;
+		}
+	}
+	~student()
+	{
+		delete[] bals;
+	}
+};
+class aspirant : public student
+{
+	bool aspir;
+	int all_bals;
+	bool dopusk;
+	void dopusk_()
+	{
+		for (int i = 0; i < kol_bals; i++)
+			all_bals += bals[i];
+		if (all_bals > 10)
+			dopusk = 1;
+	}
+public:
+	aspirant() : student(){}
+	aspirant(char* name) :aspirant(name,  0,  0,  0,  0,  0){}
+	aspirant(char* name, int age, int y, int m, int d, bool asp ) : student(name, age, d, m, y)
+	{
+		aspir = asp;
+		dopusk_();
+	}
+	void set_asp(bool val){	aspir = val;}
+	void set_dop(bool val){ dopusk = val; }
+	void print()
+	{
+		student::print();
+		dopusk_();
+		cout << "Aspir.:\t";	aspir ? cout << "Yes" : cout << "No"; cout << endl;
+		cout << "Dopusk:\t";	dopusk ? cout << "Yes" : cout << "No"; cout << endl;
+	}
+	~aspirant(){}
+};
+
+
+void main()
+{
+	//student a;
+	//a.add_bals(5);
+	//a.print();
+
+	aspirant b("Vasya");
+	b.set_asp(1);
+	b.add_bals(6);
+	b.add_bals(8);
+	b.print();
+}
