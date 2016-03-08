@@ -202,31 +202,3 @@ public:
 	}
 
 };
-
-void main()
-{
-	srand(time(NULL));
-	setlocale(0, "");
-	data_time a;
-	data_time b;
-	b.set_data(2015, 10, 6);
-	b.set_time(10, 15, 14);
-	a.set_data(2015, 10, 6);
-	a.set_time(10, 15, 14);
-	a.PrintDate();
-	b.PrintDate();
-	data_time c = a + b;
-	c.PrintDate();
-	cout << (a - b) << endl;
-	cout << (a == b) << endl;
-	cout << (a > b) << endl;
-	cout << (a < b) << endl;
-	cout << (a <= b) << endl;
-	cout << (a >= b) << endl;
-	cout << (a != b) << endl;
-
-	
-	char* t = a.DayOfWeek();
-	cout << t << endl;
-	
-}
