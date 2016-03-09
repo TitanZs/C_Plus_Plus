@@ -1,0 +1,102 @@
+#include "iostream"
+
+
+using namespace std;
+
+class passport
+{
+protected:
+	char* id_passport;
+	char* name;
+	char* famil;
+	char* sec_name;
+	int age;
+	char* country;
+public:
+	passport() :passport("000000","Noname", "Noname", "Noname", "Noname", 0){}
+	passport(char* id_p, char* name, char* famil, char* sec_name, char* country, int age)
+	{
+		id_passport = id_p;
+		this->name = name;
+		this->famil = famil;
+		this->sec_name = sec_name;
+		this->country = country;
+		this->age = age;	
+	}
+	void print()
+	{
+		cout << endl;
+		cout << "Id_pass:\t" << id_passport << endl;
+		cout << "Name:\t\t" << name << endl;
+		cout << "Faliliya:\t" << famil << endl;
+		cout << "Second name:\t" << sec_name << endl;
+		cout << "Age:\t\t" << age << endl;
+		cout << "Country:\t" << country << endl ;
+	}
+	void set_all(char* id_p, char* name, char* famil, char* sec_name, char* country, int age)
+	{
+		id_passport = id_p;
+		this->name = name;
+		this->famil = famil;
+		this->sec_name = sec_name;
+		this->country = country;
+		this->age = age;
+	}
+	~passport(){}
+};
+class ForeignPassport : public passport
+{
+	char** vises;
+	int kol_vises;
+	bool tampj_control;
+	
+public:
+	ForeignPassport() : passport(){ kol_vises = 0; }
+	ForeignPassport(char* id_p, char* name, char* famil, char* sec_name, char* cauntry, int age) :passport(id_p, name, famil, sec_name, cauntry, age){ kol_vises = 0; }
+	void add_visa(char* country)
+	{
+		int i = 0;
+		char** temp = new char*[kol_vises + 1];
+		for (; i < kol_vises; i++)
+			temp[i] = vises[0];
+		temp[i] = country;
+			
+		delete[] vises;
+		vises = temp;
+		temp = nullptr;
+		kol_vises++;
+	}
+	void set_kontrol(bool val)
+	{
+		tampj_control = val;
+	}
+	void print()
+	{
+		passport::print();
+		cout << "Vises:";
+		for (int i = 0; i < kol_vises; i++)
+			cout << "\t\t" << i+1 << " " << vises[i] << endl;
+		cout << "Control:\t";
+		tampj_control ? cout << "Yes" : cout << "No";
+		cout << endl;
+
+	}
+	~ForeignPassport()
+	{
+		delete[] vises;
+	}
+};
+
+
+void main()
+{
+	passport a("KK01230","Vasya","Ivanov","Petrovich","Ukraine",27);
+	a.print();
+
+	ForeignPassport b("KK3123", "Petya", "Petrov", "Ivanovich", "London", 30);
+	b.add_visa("Ukraine");
+	b.add_visa("Spain");
+	b.add_visa("Italy");
+	b.set_kontrol(1);
+	b.print();
+}
