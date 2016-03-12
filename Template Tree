@@ -1,0 +1,77 @@
+#include <iostream>
+using namespace std;
+
+template <class T>
+struct node
+{
+	T val;
+	node* l;
+	node* r;
+};
+template <class T>
+void print(node<T>* &tree)
+{
+	if (tree != NULL)
+	{
+		print(tree->l);
+		cout << tree->val << endl;
+		print(tree->r); 
+	}
+}
+
+template <class T>
+void _delete(node<T>* &tree){
+	if (tree != NULL)
+	{
+		_delete(tree->l);
+		_delete(tree->r);
+		delete tree;
+		tree = NULL;
+	}
+
+}
+template <class T>
+void add_node(int val, node<T> *&tree)
+{
+	if (tree == NULL)
+	{
+		tree = new node<T>;
+		tree->val = val;
+		tree->l = tree->r = NULL;
+	}
+	else if (val < tree->val)
+	{
+		if (tree->l != NULL) add_node(val, tree->l);
+		else
+		{
+			tree->l = new node<T>;
+			tree->l->l = NULL;
+			tree->l->r = NULL;
+			tree->l->val = val;
+		}
+	}
+	else if (val > tree->val)
+	{
+		if (tree->r != NULL) add_node(val, tree->r);
+		else
+		{
+			tree->r = new node<T>; 
+			tree->r->l = tree->r->r = NULL; 
+			tree->r->val = val;
+		}
+	}
+}
+
+int main()
+{
+	node<int> *derevo = NULL;  
+	int a;
+	cout << "Skolko dobavit? ";
+	cin >> a;
+	for (int i = a; i>0; i--)
+		add_node(i, derevo);
+	
+	print(derevo);
+	cout << '\n';
+	_delete(derevo);
+}
