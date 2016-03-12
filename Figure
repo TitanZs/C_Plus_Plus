@@ -1,0 +1,202 @@
+#include "iostream"
+#include<Windows.h>
+
+using namespace std;
+
+class figure
+{
+protected:
+	COLORREF color;
+	enum SHAPE_COLOR{
+		BLACK,
+		RED,
+		GREEN,
+		BLUE,
+		WHITE,
+		NONE
+	};
+public:
+	void print(){};
+	void SetColor(unsigned char red, unsigned char green, unsigned char blue)
+	{
+		color = RGB(red, green, blue);
+	}
+	void SetColor(SHAPE_COLOR c)
+	{
+		switch (c)
+		{
+		case BLACK:
+			SetColor(0, 0, 0);
+			break;
+		case RED:
+			SetColor(255, 0, 0);
+			break;
+		case GREEN:
+			SetColor(0, 255, 0);
+			break;
+		case BLUE:
+			SetColor(0, 0, 255);
+			break;
+		case WHITE:
+			SetColor(255, 255, 255);
+			break;
+		}
+	}
+};
+
+class point : public figure
+{
+protected:
+	int x;
+	int y;
+public:
+	point()
+	{
+		x = 0;
+		y = 0;
+	}
+	int GetX(){	return x;}
+	int GetY(){	return y;}
+	point(int x, int y)	{this->x = x; this->y = y;}
+	void SetY(int y){this->y = y;}
+	void SetX(int x){this->x = x;}
+};
+
+class rect : public point
+{
+protected:
+	point tl;
+	unsigned short width;
+	unsigned short height;
+	
+public:
+	rect(){ color = RGB(255, 255, 255); }
+	rect(int x, int y, unsigned short _width, unsigned short _height)
+	{
+		this->x = x;
+		this->y = y;
+		width = _width;
+		height = _height;
+		SetColor(RED);
+	}
+	unsigned short GetWidth(){ return width; }
+	unsigned short GetHeight(){ return height; }
+	COLORREF GetColor(){ return color; }
+	void SetPointTopLeft(point & p){ tl = p; }
+	void SetWidth(unsigned short value){ width = value; }
+	void SetHeight(unsigned short value){ height = value; }
+
+	void print()
+	{
+		HWND hwnd = GetConsoleWindow();
+		HDC hdc = GetDC(hwnd);
+		HPEN pen = CreatePen(PS_SOLID, 3, color);
+		SelectObject(hdc, pen);
+		MoveToEx(hdc, x, y, NULL);
+		LineTo(hdc, x + width, y);
+		LineTo(hdc, x + width, y + height);
+		LineTo(hdc, x, y + height);
+		LineTo(hdc, x, y);
+	}
+};
+
+class FilledRect :public rect{
+	COLORREF fill_color;
+public:
+	FilledRect( unsigned short _width,unsigned short _height, COLORREF _fill_color)	: rect(x, y, _width, _height), fill_color(_fill_color){}
+	FilledRect() :rect(50, 50, 100, 50), fill_color(RGB(204, 204, 0)){}
+	void print()
+	{
+		HWND hwnd = GetConsoleWindow();
+		HDC hdc = GetDC(hwnd);
+		HPEN pen = CreatePen(PS_SOLID, 3, GetColor());
+		SelectObject(hdc, pen);
+		HBRUSH hBrush = CreateSolidBrush(fill_color);
+
+		SelectObject(hdc, hBrush);
+		Rectangle(hdc, x, y,
+		x + GetWidth(),y + GetHeight());
+	}
+};
+
+class circle : public point
+{
+protected:
+	int r;
+	point a;
+public:
+	circle(){ r = 0; a.SetX(10), a.SetY(10); }
+	circle(int r, int x, int y)
+	{
+		this->r = r; 
+		a.SetX(x);
+		a.SetY(y);
+	}
+	void print(){}
+};
+
+class elips : public circle
+{
+public:
+	elips(){ r = 0; }
+	elips(int r){ this->r = r; }
+	void print(){}
+};
+
+class polygon : public rect
+{
+protected:
+	int kol_vo_pol;
+	int* arr;
+	int dlin;
+	polygon()
+	{
+		kol_vo_pol = 3;
+		arr = new int[kol_vo_pol];
+		dlin = 10;
+	}
+	polygon(int size, int dlin)
+	{
+		kol_vo_pol = size;
+		arr = new int[kol_vo_pol];
+		this->dlin = dlin;
+	}
+	~polygon()
+	{
+		delete[] arr;
+	}
+	void print(){}
+};
+
+class circl_in_rect : public circle, rect
+{
+	rect a;
+	circle b;
+public:
+	circl_in_rect()
+	{
+		b.a.SetX(10);
+		b.a.SetY(10);
+	}
+	circl_in_rect(int _x, int _y, int _h, int _w)
+	{
+		b.a.SetX(_x);
+		b.a.SetY(_y);
+		a.SetHeight(_h);
+		a.SetWidth(_w);
+	}
+	void print()
+	{
+		b.print();
+		a.print();
+	}
+
+};
+
+void main()
+{
+	rect a(200, 150, 150, 100);
+	a.print();
+	FilledRect b;
+	b.print();
+}
