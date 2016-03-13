@@ -1,0 +1,221 @@
+#include <iostream> 
+#include <ctime> 
+#include <stdio.h> 
+#include <cstdio> 
+#include <iomanip> 
+#include <conio.h> 
+#include <string> 
+#define TEST0 
+
+typedef unsigned int uint;
+
+void main()
+{
+	setlocale(0, "");
+	
+
+	srand((unsigned int)time(0));
+
+	rand();
+
+	//3.5+2*5                                //  13.5      ok 
+	//(3+2)*5                                //  25      ok 
+	//(3+4*(5-2)-1)/2                        //  7          ok 
+	//(3+2)/5 + (3+4*(5-2)-1)/2              //  8          ok 
+	//16.8 / ((3+2)/5 + (3+4*(5-2)-1)/2)     //  2.1     ok 
+	//(64/32)+78-(20/4)+(2*(11-6))+45+2/2    //  131     ok 
+	//(3+5)^2-60-2^3                         //  -4         ok 
+	//((3+2)/5 + (3+4*(5-2)-1)/2)^0.5        //  2.82843     ok (для степени! целое число). 
+
+
+
+
+	string strA("(64/32)+78-(20/4)+(2*(11-6))+45+2/2");
+
+
+	_Stack STACK;
+	int j = 0;
+	myMass tempStream;
+	myMass * outStream = new myMass[strA.GetLength()];
+	int x = 0;
+	for (uint i = 0; i < strA.GetLength(); i++)
+	{
+		switch (strA[i])
+		{
+		case '(':
+			tempStream.isChar = '(';
+			tempStream.isDouble = 0;
+			STACK.Push(tempStream);
+#ifdef TEST 
+			cout << STACK.Top() << " >>> СТЕК\n";
+			cout << "top = " << STACK.GetTop() << "\n";
+			system("pause");
+#endif 
+			break;
+
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+		case '.':
+
+			outStream[j].isChar = 'n';
+			outStream[j++].isDouble = strA.atod(strA.GetCharArray(), i);
+
+			if (STACK.Top().isChar == '*' || STACK.Top().isChar == '/' || STACK.Top().isChar == '^')
+			{
+				outStream[j].isDouble = 0;
+				outStream[j++].isChar = STACK.Pop().isChar;
+#ifdef TEST 
+				cout << "top = " << STACK.GetTop() << "\n";
+				cout << "11. " << " CTEK >>> " << outStream[j - 1].isChar << " >>> в массив\n";
+				system("pause");
+#endif 
+			}
+			i = i - 2;
+			if (strA[i])
+#ifdef TEST 
+				cout << "top = " << STACK.GetTop() << "\n";
+			cout << "1 ." << outStream[j - 1].isDouble << " >>> в массив\n";
+			system("pause");
+#endif 
+			break;
+
+		case '+':
+
+			tempStream.isChar = '+';
+			tempStream.isDouble = 0;
+			STACK.Push(tempStream);
+#ifdef TEST 
+			cout << "top = " << STACK.GetTop() << "\n";
+			cout << "3." << STACK.Top() << " >>> CTEK\n";
+			system("pause");
+#endif 
+			break;
+		case '-':
+			if (STACK.Top().isChar == '-')
+			{
+				outStream[j].isDouble = 0;
+				outStream[j++].isChar = STACK.Pop().isChar;
+#ifdef TEST 
+				cout << "top = " << STACK.GetTop() << "\n";
+				cout << "11. " << " CTEK >>> " << outStream[j - 1].isChar << " >>> в массив\n";
+				system("pause");
+#endif 
+			}
+			tempStream.isChar = '-';
+			tempStream.isDouble = 0;
+			STACK.Push(tempStream);
+#ifdef TEST        
+			cout << "top = " << STACK.GetTop() << "\n";
+			cout << "5." << STACK.Top() << " >>> CTEK\n";
+			system("pause");
+#endif 
+			break;
+
+
+		case '*':
+			tempStream.isChar = '*';
+			tempStream.isDouble = 0;
+			STACK.Push(tempStream);
+#ifdef TEST 
+			cout << "top = " << STACK.GetTop() << "\n";
+			cout << "6." << STACK.Top() << " >>> CTEK\n";
+			system("pause");
+#endif 
+			break;
+		case '/':
+			tempStream.isChar = '/';
+			tempStream.isDouble = 0;
+			STACK.Push(tempStream);
+#ifdef TEST 
+			cout << "top = " << STACK.GetTop() << "\n";
+			cout << "8." << STACK.Top() << " >>> CTEK\n";
+			system("pause");
+#endif 
+			break;
+		case '^':
+			tempStream.isChar = '^';
+			tempStream.isDouble = 0;
+			STACK.Push(tempStream);
+#ifdef TEST 
+			cout << "top = " << STACK.GetTop() << "\n";
+			cout << "9." << STACK.Top() << " >>> CTEK\n";
+			system("pause");
+#endif 
+			break;
+		case ')':
+			while (STACK.Top().isChar != '(' && STACK.IsEmpty() != true)
+			{
+				if (STACK.IsEmpty() != true)
+				{
+
+					outStream[j].isDouble = 0;
+					outStream[j++].isChar = STACK.Pop().isChar;
+#ifdef TEST 
+					cout << "top = " << STACK.GetTop() << "\n";
+					cout << "10." << "CTEK >>> " << outStream[j - 1].isChar << " >>> в массив\n";
+					system("pause");
+#endif 
+				}
+			}
+
+			if (STACK.Top().isChar == '(' && STACK.IsEmpty() != true)
+			{
+				STACK.Pop().isChar;
+#ifdef TEST 
+				cout << "delete '('\n";
+				cout << "top = " << STACK.GetTop() << "\n";
+				system("pause");
+#endif 
+			}
+			if (STACK.Top().isChar == '*')
+			{
+				outStream[j].isDouble = 0;
+				outStream[j++].isChar = STACK.Pop().isChar;
+#ifdef TEST 
+				cout << "top = " << STACK.GetTop() << "\n";
+				cout << "11. " << " CTEK >>> " << outStream[j - 1].isChar << " >>> в массив\n";
+				system("pause");
+#endif 
+			}
+			if (STACK.Top().isChar == '-' && STACK.IsEmpty() != true)
+			{
+				outStream[j].isDouble = 0;
+				outStream[j++].isChar = STACK.Pop().isChar;
+#ifdef TEST 
+				cout << "delete '('\n";
+				cout << "top = " << STACK.GetTop() << "\n";
+				system("pause");
+#endif 
+			}
+
+
+			break;
+		}
+	}
+	while (STACK.IsEmpty() == false)
+	{
+		outStream[j++].isChar = STACK.Pop().isChar;
+	}
+	for (uint i = 0; i < j; i++)
+	{
+		if (outStream[i].isChar != 'n')cout << outStream[i].isChar << " ";
+		else cout << outStream[i].isDouble << " ";
+	}
+	cout << "\n\n";
+
+	_Stack A;
+	for (uint i = 0; i < j; i++)
+		A.Push(outStream[i]);
+
+	A.Calc(outStream);
+
+
+}
