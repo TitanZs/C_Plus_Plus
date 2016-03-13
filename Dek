@@ -1,0 +1,376 @@
+#include <iostream>
+#include <time.h>
+
+using namespace std;
+
+template <class T>
+struct elem
+
+{
+	T data;
+	elem<T>* prev;
+	elem<T>* next;	
+	elem() { next = nullptr; }
+	elem(const T & val) { this->data = val;  next = prev = nullptr; }
+};
+
+template <class T>
+class list
+{
+private:
+	elem<T> *Head, *Tail;
+	int length;
+public:
+	list()
+	{
+		Head = Tail = nullptr;
+		length = 0;
+	}
+	list(const list<T> & l)
+	{
+		head = nullptr;
+		tail = nullptr;
+		size = 0;
+		if (!l.head)
+			return;
+		Elem<T> * temp, *temp2 = l.head;
+		head = new Elem<T>(temp2->val);
+		temp = head;
+		temp2 = temp2->next;
+		++size;
+		while (temp2)
+		{
+			temp->next = new Elem<T>(temp2->val);
+			temp2 = temp2->next;
+			temp = temp->next;
+			++size;
+		}
+	}
+	~list()	{ del_all(); }
+	int get_length()	{		return length;	}
+	void add_tail(T n)
+	{
+		Elem<T>* temp = new Elem<T>();
+		temp->next = nullptr;
+		temp->data = n;
+		temp->prev = Tail;
+		if (Tail != nullptr)
+			Tail->next = temp;
+		if (length == 0)
+			Head = Tail = temp;
+		else Tail = temp;
+		length++;
+	}
+	void add_head(T n)
+	{
+		Elem<T>* temp = new Elem<T>();
+		temp->prev = nullptr;
+		temp->data = n;
+		temp->next = Head;
+
+		if (Head != nullptr)
+			Head->prev = temp;
+		if (length == 0)
+			Head = Tail = temp;
+		else Head = temp;
+		length++;
+
+	}
+	void del(int pos)
+	{
+		if (pos < 1 || pos > length)
+			throw "Incorrect position";
+		int i = 1;
+
+		Elem<T> * Del = Head;
+		while (i < pos)
+		{
+			Del = Del->next;
+			i++;
+		}
+
+		Elem<T> * PrevDel = Del->prev;
+		Elem<T> * AfterDel = Del->next;
+
+		if (PrevDel != nullptr && length != 1)
+			PrevDel->next = AfterDel;
+
+		if (AfterDel != nullptr && length != 1)
+			AfterDel->prev = PrevDel;
+
+		if (pos == 1)
+			Head = AfterDel;
+
+		if (pos == length)
+			Tail = PrevDel;
+
+		delete Del;
+		length--;
+	}
+	void del_all()	{		while (length != 0) Del(1);	}
+	elem<T>* get_elem(int pos)
+	{
+		if (pos < 1 || pos > length)
+		{
+			throw "Incorrect position";
+			return nullptr;
+		}
+
+		if (pos == 1)
+			return Head;
+		if (pos == count)
+			return Tail;
+
+		Elem<T>* temp = Head;
+		int i = 1;
+
+		while (i < pos && temp != nullptr)
+		{
+			temp = temp->next;
+			i++;
+		}
+
+		if (temp == nullptr) return nullptr; // ничего не найдено :(
+		return temp;
+	}
+	list<T> & operator=(const list<T> & l)
+	{
+		if (this == &l)
+			return *this;
+		this->~List();
+		if (!l.head)
+			return *this;
+		Elem<T> * temp, *temp2 = l.head;
+		head = new Elem<T>(temp2->val);
+		temp = head;
+		temp2 = temp2->next;
+		++size;
+		while (temp2)
+		{
+			temp->next = new Elem<T>(temp2->val);
+			temp2 = temp2->next;
+			temp = temp->next;
+			++size;
+		}
+		return *this;
+	}
+	list<T> operator+(const list<T> & l) const
+	{
+		List<T> newlist;
+		Elem<T> * temp = nullptr, *temp2 = nullptr;
+		if (head)
+		{
+			temp2 = head;
+			newlist.head = new Elem<T>(temp2->val);
+			temp = newlist.head;
+			temp2 = temp2->next;
+			++newlist.size;
+			while (temp2)
+			{
+				temp->next = new Elem<T>(temp2->val);
+				temp2 = temp2->next;
+				temp = temp->next;
+				++newlist.size;
+			}
+		}
+		if (l.head)
+		{
+			temp2 = l.head;
+			if (!newlist.head)
+			{
+				newlist.head = new Elem<T>(temp2->val);
+				temp = newlist.head;
+				temp2 = temp2->next;
+				++newlist.size;
+			}
+			while (temp2)
+			{
+				temp->next = new Elem<T>(temp2->val);
+				temp2 = temp2->next;
+				temp = temp->next;
+				++newlist.size;
+			}
+		}
+		return newlist;
+	}
+	void insert(T val, int pos)
+	{
+		if (pos<0 || pos>size)
+			return;
+		Elem<T> * temp = head, *newel = new Elem<T>(val);
+
+		if (!head)
+		{
+			temp->prev = NULL;
+			head = tail = temp;
+		}
+
+		if (pos == 0)
+		{
+			newel->next = head;
+			head = newel;
+			newel->prev = NULL;
+			++size;
+			return;
+		}
+		if (pos == size)
+		{
+			newel->prev = tail;
+			tail = newel;
+			newel->next = NULL;
+			++size;
+			return;
+		}
+		else
+		{
+
+			int i = 0;
+			if (pos < size / 2)
+			{
+				i = 0;
+				temp = head;
+				while (i < pos)
+				{
+					temp = temp->next;
+					i++;
+				}
+				newel->next = temp->next;
+				temp->next = newel;
+				++size;
+			}
+			else {
+				i = size - 1;
+				temp = tail;
+				while (i > pos)
+				{
+					temp = temp->prev;
+					i--;
+				}
+				newel->prev = temp->prev;
+				temp->prev = newel;
+				++size;
+			}
+		}
+
+	}
+	void print() const
+	{
+		Elem<T> * temp = Head;
+		while (temp)
+		{
+			cout << temp->data;
+			temp = temp->next;
+		}
+		cout << endl;
+	}
+	void r_v_rint() const
+	{
+		Elem<T> * temp = Tail;
+		while (temp)
+		{
+			cout << temp->data;
+			temp = temp->prev;
+		}
+		cout << endl;
+	}
+	void sort()
+	{
+		if (size < 2)
+			return;
+		Elem<T> * instemp, *last, *newtemp;
+		instemp = head->next;
+		last = instemp->next;
+		head->next = nullptr;
+		while (last)
+		{
+			last = instemp->next;
+			instemp->next = nullptr;
+			newtemp = head;
+			if (instemp->val < head->val)
+			{
+				instemp->next = head;
+				head = instemp;
+			}
+			else
+			{
+				while (newtemp->next && newtemp->next->val < instemp->val)
+					newtemp = newtemp->next;
+				instemp->next = newtemp->next;
+				newtemp->next = instemp;
+			}
+			instemp = last;
+		}
+	}
+};
+
+template <class T>
+class dek
+{
+	list<elem<T>> l;
+	int count;
+public:
+	dek() { count = 0; }
+	dek(const dek & D)
+	{
+		Head = Tail = nullptr;
+		count = 0;
+		if (!D.head)
+			return;
+		DElem<T> * temp = D.head;
+		while (temp != 0)
+		{
+			AddTail(temp->val);
+			temp = temp->next;
+			count++;
+		}
+	}
+	~dek() { l.DelAll(); }
+	void clear()
+	{
+		l.DelAll();
+		count = 0;
+	}
+	bool is_empty(){ return count == 0; }
+	int get_count(){ return count; }
+	void push_back(T number)
+	{
+		l.AddTail(number);
+		count++;
+	}
+	void push_front(T number)
+	{
+		l.AddHead(number);
+		count++;
+	}
+	T pop_front()
+	{
+		if (!IsEmpty())
+		{
+			T first = l.GetElem(1)->data;
+			l.Del(1);
+			count--;
+			return first;
+		}
+		else throw "Deque is empty!";
+	}
+	T pop_back()
+	{
+		if (!IsEmpty())
+		{
+			T last = l.GetElem(count - 1)->data;
+			l.Del(count - 1);
+			count--;
+			return last;
+		}
+		else throw "Deque is empty!";
+	}
+	void show()
+	{
+		l.Print();
+	}
+};
+
+void main()
+{
+
+}
