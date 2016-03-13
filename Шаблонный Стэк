@@ -1,0 +1,125 @@
+#include <stdio.h>
+#include <iostream>
+#include <ctime>
+
+using namespace std;
+
+template<class T>
+class stek
+{
+	int size;
+	T * val;
+	int top; 
+	bool control(const T)
+	{
+		static T tempDiitg = digit;
+		static bool rez = false;
+		if (tempDiitg != digit)
+		{
+			tempDiitg = digit;
+			rez = false;
+		}
+		T temp = val[--top];
+
+		if (top > 0)
+		{
+			if (digit == temp)
+				rez = true;
+			else
+				Control(digit);
+		}
+		val[++top];
+		return rez;
+	}
+
+public:
+	stek()
+	{
+		top = 0;
+		size = 10;
+		val = new T[size];
+		for (int i = 0; i < size; i++)
+			val[i] = 0;
+	}
+	void clear(){top = 0;}
+	bool is_empty(){	return top == 0;}
+	bool is_full(){	return top == size;	}
+	T get_count(){	return top;	}
+	void push(T digit)
+	{
+
+		if (top < size)
+			if (!Control(digit)) val[top++] = digit;
+		
+		if (top == size)
+		{
+			T * tempval = new T[size * 2];
+			Expand(tempval);
+			cout << "top -> " << top << " ";
+			delete[]val;
+			size = size * 2;
+			val = new T[size];
+			for (int i = 0; i < size; i++)
+				val[i] = tempval[i];
+		}
+	}
+
+	T pop()
+	{
+		if (!is_empty())
+			return val[top--];
+		else throw "Stack is empty!";
+	}
+	T top()	{return val[top - 1];}
+	T peek()
+	{
+		static    T a = 0;
+		T temp = val[top++];
+		if (top <= size)
+		{
+			if (top == size)
+				a = temp;
+			Peek();
+		}
+		val[top--];
+		return a;
+	}
+	bool contains(T)
+	{
+		static    T tempA = a;
+		static    bool rez = false;
+		T temp = val[top++];
+		if (top <= size - 1)
+		{
+			if (tempA == temp) rez = true;
+			Contains(a);
+		}
+		val[top--];
+		return rez;
+	}
+	void expand(T* &val1)
+	{
+		T temp = 0;
+		if (top >= 0)
+		{
+			temp = val[top--];
+			if (top == 0)
+				val1[top--] = temp;
+			Expand(val1);
+			val1[top++] = temp;
+		}
+	}
+	~stek()
+	{
+		if (val != nullptr)
+			delete[]val;
+	}
+};
+
+void main()
+{
+	
+}
+
+
+
