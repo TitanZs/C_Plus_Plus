@@ -1,0 +1,157 @@
+#pragma once 
+
+#include <iostream> 
+#include <ctime> 
+#include <iostream> 
+#include <ctime> 
+using namespace std;
+
+class stek
+{
+	int size;
+	char * mass;
+	int top_; 
+	bool control(const char digit)
+	{
+		static char tempDiitg = digit;
+		static bool rez = false;
+		if (tempDiitg != digit)
+		{
+			tempDiitg = digit;
+			rez = false;
+		}
+		int temp = mass[--top_];
+		if (top_ > 0)
+		{
+			if (digit == temp)
+				rez = true;
+			else
+				control(digit);
+		}
+		mass[++top_];
+		return rez;
+	}
+public:
+	stek()
+	{
+		top_ = 0;
+		size = 10;
+		mass = new char[size];
+		for (int i = 0; i < size; i++)
+			mass[i] = 0;
+	}
+	void clear()	{ top_ = 0; }
+	bool is_empty()	{ return top_ == 0; }
+	bool is_full()	{ return top_ == size; }
+	int get_count()	{ return top_; }
+	void push(char digit)
+	{
+		if (top_<size)
+		if (!control(digit)) mass[top_++] = digit;
+		if (top_ == size)
+		{
+
+				char * tempMassD = new char[size * 2];
+				expand(tempMassD);
+				cout << "top -> " << top_ << " ";
+				system("pause");
+				delete[]mass;
+				size = size * 2;
+				mass = new char[size];
+				for (int i = 0; i< size; i++)
+					mass[i] = tempMassD[i];
+		}
+	}
+	char pop()
+	{
+		if (!is_empty())
+			return mass[--top_];
+		else throw "Стек путой!";
+	}
+	char top(){ return mass[top_ - 1]; }
+	char peek()
+	{
+		static char a = 0;
+		char temp = mass[top_++];
+		if (top_ <= size)
+		{
+			if (top_ == size)
+				a = temp;
+			peek();
+		}
+		mass[top_--];
+		return a;
+	}
+	bool contains(char a)
+	{
+		static char tempA = a;
+		static bool rez = false;
+		int temp = mass[top_++];
+		if (top_ <= size - 1)
+		{
+			if (tempA == temp) rez = true;
+			contains(a);
+		}
+		mass[--top_];
+		return rez;
+	}
+	void stek::expand(char* &newMassD)
+	{
+		char temp = 0;
+		if (top_ >= 0)
+		{
+			temp = mass[--top_];
+			if (top_ == 0)
+				newMassD[--top_] = temp;
+			expand(newMassD);
+			newMassD[top_++] = temp;
+		}
+	}
+	~stek()
+	{
+		if (mass != nullptr)
+			delete[]mass;
+	}
+};
+
+void main()
+{
+	setlocale(0, "");
+
+	srand((unsigned int)time(0));
+
+	rand();
+	char tempName[50];
+	std::cout << "Введите уравнение - ";
+	gets_s(tempName, 50);
+	char* x = new char[strlen(tempName) + 1];
+	strcpy_s(x, strlen(tempName) + 1, tempName);
+	stek stack;
+	for (int i = 0; i<strlen(x); i++)
+	{
+		switch (x[i])
+		{
+		case '(':
+		case '{':
+		case '[':
+			stack.push(x[i]);
+			break;
+		case ']':
+		case '}':
+		case ')':
+			if (stack.is_empty() || (x[i] == ')' && stack.top() != '(') || (x[i] == '}' && stack.top() != '{') || (x[i] == ']' && stack.top() != '['))
+			{
+				std::cout << "Ошибка!\n";
+				stack.top();
+				return;
+			}
+			else
+				std::cout << "Правильно!\n";
+			stack.pop();
+			break;
+		}
+	}
+}
+
+
+
