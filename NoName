@@ -1,0 +1,236 @@
+#pragma once
+#include <iostream>
+#include <iomanip>
+#include <ctime>
+
+template <class T>
+class vectoror
+{
+	T* vector;
+	int size;
+public:
+	vectoror()	{		size = 0;	}
+	explicit vectoror(int n)
+	{
+		size = n;
+		vector = new T[size];
+		for (int i = 0; i < size; i++)
+			vector[i] = 0;
+	}
+	vectoror(const T*, int n)
+	{
+		size = n;
+		vector = new T[size];
+		for (int i = 0; i < size; i++)
+			vector[i] = v[i];
+	}
+	vectoror(const vectoror<T>& v)
+	{
+		size = v.size;
+		vector = new T[size];
+		for (int i = 0; i < size; i++)
+			vector[i] = v.vector[i];
+	}
+	~vectoror()	{			delete[] vector;	}
+	vectoror<T>& operator = (const vectoror<T>& v)
+	{
+		if (&v == this)
+			return *this;
+		if (size != v.size && size != 0)
+		{
+			delete[] vector;
+			size = v.size;
+			vector = new T[size];
+		}
+		for (int i = 0; i < size; i++)
+			vector[i] = v.vector[i];
+
+		return *this;
+	}
+	T& operator [] (int n)
+	{
+		if (n < 0)
+			return vector[0];
+		else if (n > size - 1)
+			return vector[size - 1];
+		else
+			return vector[n];
+	}
+	int GetSize() const
+	{
+		return size;
+	}
+	void Clear()
+	{
+		if (size)
+		{
+			delete[] vector;
+			vector = 0;
+			size = 0;
+		}
+	}
+	bool IsEmpty() const { return size == 0; }
+	void Add(const T& item)
+	{
+		T *temp = new T[size + 1];
+		for (int i = 0; i < size; i++)
+			temp[i] = vector[i];
+		temp[size] = item;
+		delete[] vector;
+		vector = temp;
+		size++;
+	}
+	void Insert(int index, const T& item)
+	{
+		if (index <0 || index>size)
+			return;
+		if (index == size)
+		{
+			Add(item);
+			return;
+		}
+
+		T *temp = new T[size + 1];
+		for (int i = 0; i < size; i++)
+		{
+			if (i < index)
+				temp[i] = vector[i];
+			else if (i >= index)
+				temp[i + 1] = vector[i];
+		}
+		temp[index] = item;
+		delete[] vector;
+		vector = temp;
+		size++;
+	}
+	void Remove(int index)
+	{
+		if (index >= size)
+			return;
+
+		if (size == 1)
+		{
+			delete[] vector;
+			vector = 0;
+		}
+		else
+		{
+			T *temp = new T[size - 1];
+			for (int i = 0; i < size; i++)
+			if (i < index)
+				temp[i] = vector[i];
+			else if (i > index)
+				temp[i - 1] = vector[i];
+			delete[] vector;
+			vector = temp;
+		}
+		size--;
+	}
+	int Search(T val)
+	{
+		for (int i = 0; i < size; i++)
+		{
+			if (vector[i] == val)
+				return i;
+			else
+				return -1;
+		}
+	}
+};
+
+
+template <class T>
+struct p_queue_elem
+{
+	T item;
+	int priority;
+
+	p_queue_elem() { item = 0; priority = 0; }
+	p_queue_elem(const T & item, int priority) { this->item = item; this->priority = priority; }
+	p_queue_elem(const p_queue_elem<T> & elem) { this->item = elem.item; this->priority = elem.priority; }
+};
+
+template <class T>
+class PrQueue
+{
+private:
+
+	vectoror<p_queue_elem<T>> data;
+public:
+
+	void clear() { data.Clear(); }
+	int get_count() const { return data.GetSize(); }
+	bool is_empty() const { return data.IsEmpty(); }
+	void add(const T& item, int priority)
+	{
+		p_queue_elem<T> newItem = { item, priority };
+		if (IsEmpty())	{			data.Add(newItem);			return;		}
+		if (priority == data[data.GetSize() - 1].priority)		{			data.Add(newItem);			return;		}
+		int i = 0;
+		while (i < data.GetSize() && data[i].priority >= priority)
+			i++;
+		data.Insert(i, newItem);
+	}
+	void add(p_queue_elem<T> Item)
+	{
+		if (IsEmpty())
+			data.Add(Item);
+		else
+		{
+			int i = 0;
+			while (i < data.GetSize() && data[i].priority >= Item.priority)
+				i++;
+			data.Insert(i, Item);
+		}
+	}
+	void remove(T item)
+	{
+		if (!IsEmpty())
+			return;
+		else
+		for (int i = 0; i < data.GetSize(); i++)
+		{
+			if (data[i].item == item)
+			{
+				data.Remove(i);
+				return;
+			}
+			else
+				cout << "No element in a queue!" << endl;
+		}
+	}
+	p_queue_elem<T> peek()
+	{
+		if (IsEmpty){	cout << "NO elements in the queue!" << endl;break;	}
+		else
+			return data[0];
+	}
+	void print_with_priority()
+	{
+		if (IsEmpty())
+			return;
+		for (int i = 0; i < data.GetSize(); i++)
+			cout << data[i].item << ", pr: "<< data[i].priority << endl;
+		cout << endl;
+	}
+	void print_element(int index)
+	{
+		if (IsEmpty())
+			return;
+		else
+			cout << data[index].item << ", pr: "<< data[index].priority << endl;
+	}
+	void dequeue()
+	{
+		if (IsEmpty())
+			return;
+		else
+			data.Remove(0);
+	}
+};
+
+
+void main()
+{
+	
+}
